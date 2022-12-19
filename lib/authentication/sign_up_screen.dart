@@ -60,7 +60,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         "id": firebaseUser.uid,
         "nane": nameTextEditingController.text.trim(),
         "email": emailTextEditingController.text.trim(),
-        "phone": phoneTextEditingController.text.trim()
+        "phone": phoneTextEditingController.text.trim(),
+        "password": passwordTextEditingController.text.trim()
       };
       DatabaseReference driversRef =
           FirebaseDatabase.instance.ref().child("users");
