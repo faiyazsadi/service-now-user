@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../authentication/login_screen.dart';
 import '../global/global.dart';
 import '../main_screen/main_screen.dart';
@@ -37,28 +37,41 @@ class _MySplashScreenState extends State<MySplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        color: Colors.black,
-        child: Center(
+    return Scaffold(
+        backgroundColor: Colors.red[900],
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/service_now_logo.jpeg'),
-              const SizedBox(
-                height: 10,
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  shape: BoxShape.circle,
+                  boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black, spreadRadius: 1)],
+                ),
+                child: CircleAvatar(
+                  backgroundImage: AssetImage('images/service_now_logo.jpeg'),
+                  radius: 50.0,
+                ),
               ),
-              const Text(
-                'Service Now User App',
+              const SizedBox(height: 30,),
+              Text("SERVICE NOW",
                 style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-              )
+                  fontSize: 35.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'FredokaOne',
+                ),
+              ),
+              const SizedBox(height: 60),
+              SpinKitFoldingCube(
+                color: Colors.white,
+                size: 50.0,
+              ),
+
             ],
           ),
-        ),
-      ),
+        )
     );
   }
 }
