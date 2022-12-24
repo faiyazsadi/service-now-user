@@ -57,11 +57,10 @@ class _CarServiceState extends State<CarService> {
    });
  }
 
-  final CameraPosition initialLocation = const CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+  static CameraPosition initialLocation = const CameraPosition(
+    target: LatLng(22.899185265097515, 89.5051113558963),
     zoom: 14.4746,
   );
-  
 
   Future<Uint8List> getMarker(BuildContext context) async {
     ByteData byteData = await DefaultAssetBundle.of(context).load("images/car_icon.png");
@@ -98,6 +97,17 @@ void getCurrentLocation(BuildContext context) async {
     try {
       Uint8List imageData = await getMarker(context);
       var location = await _locationTracker.getLocation();
+      setState(() {
+      initialLocation = CameraPosition(
+        target: LatLng(location.latitude!, location.longitude!),
+        zoom: 18.00
+      );
+      _controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        bearing: 192.8334901395799,
+        target: LatLng(location.latitude!, location.longitude!),
+        tilt: 0,
+        zoom: 18.00)));
+      });
       updateMarkerAndCircle(location, imageData, currentFirebaseuser!.uid);
       DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users");
       usersRef.child(currentFirebaseuser!.uid).update({"latitude": location.latitude, "longitude": location.longitude});
@@ -288,13 +298,6 @@ void getActiveDrivers(BuildContext context) async {
             ),
             ),
             const SizedBox(width: 200),
-            // FloatingActionButton(
-            //   child: const Icon(Icons.location_searching),
-            //   onPressed: () {
-            //     getCurrentLocation(context);
-            //     getActiveUsers(context);
-            //   }
-            // ),
           ],
         ),
       )
