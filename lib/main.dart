@@ -2,7 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:service_now_user/authentication/sign_up.dart';
+import 'authentication/edit_profile.dart';
 import 'authentication/otp_input.dart';
+import 'main_screen/main_screen.dart';
 
 
 void main() async{
@@ -18,6 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: const Splash(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -35,7 +39,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
     // TODO: implement initState
     super.initState();
     Future.delayed(const Duration(seconds: 3), (){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const Home()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const MainScreen()));
     }
     );
   }
@@ -172,21 +176,21 @@ class _HomeState extends State<Home> {
               SizedBox(height: 30.0,),
               FloatingActionButton(onPressed: () async {
                 //used for OTP: will work later*******************************
-                // await FirebaseAuth.instance.verifyPhoneNumber(
-                //   phoneNumber: '${countrycode.text + phone}',
-                //   verificationCompleted: (PhoneAuthCredential credential) {},
-                //   verificationFailed: (FirebaseAuthException e) {},
-                //   codeSent: (String verificationId, int? resendToken) {
-                //     Home.verify = verificationId;
-                //     Navigator.push(
-                //         context, MaterialPageRoute(builder: ((context) => MyOtp('${phone}'))));
-                //
-                //   },
-                //   codeAutoRetrievalTimeout: (String verificationId) {},
-                // );
+                await FirebaseAuth.instance.verifyPhoneNumber(
+                  phoneNumber: '${countrycode.text + phone}',
+                  verificationCompleted: (PhoneAuthCredential credential) {},
+                  verificationFailed: (FirebaseAuthException e) {},
+                  codeSent: (String verificationId, int? resendToken) {
+                    Home.verify = verificationId;
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : phone)));
 
-                Navigator.push(
-                    context, MaterialPageRoute(builder: ((context) => MyOtp('${phone}'))));
+                  },
+                  codeAutoRetrievalTimeout: (String verificationId) {},
+                );
+                // Navigator.push(
+                //     context, MaterialPageRoute(builder: ((context) => MyOtp(text: phone))));
+
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : phone)));
               },
                 backgroundColor: Colors.red[900],
                 child: const Icon(Icons.navigate_next_rounded),),
