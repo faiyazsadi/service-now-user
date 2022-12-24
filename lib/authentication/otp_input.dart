@@ -144,7 +144,6 @@ class _MyOtpState extends State<MyOtp> {
                     backgroundColor: Colors.red[900],
                     child: const Icon(Icons.navigate_next_rounded),),
                   SizedBox(height: 20.0,),
-
                 ],
               ),
             ),

@@ -49,6 +49,7 @@ dependencies:
   get: ^4.6.5
   pinput: ^2.2.16
   image_picker: ^0.8.6
+  firebase_storage: ^11.0.9
   
 
 dev_dependencies:
