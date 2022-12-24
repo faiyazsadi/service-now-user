@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import '../global/global.dart';
@@ -249,6 +250,28 @@ void getActiveDrivers(BuildContext context) async {
     }
     super.dispose();
   }
+  request() async {
+    DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
+    final snapshot = await userRef.get();
+    if(snapshot.value == false) {
+      notifyActiveDrivers();
+      userRef.set(true);
+      requestDisabled = true;
+      setState(() {
+      });
+    } else {
+      // TODO
+    }
+  }
+  cancel() {
+    print("||||||||||||||||||||");
+    print("||||||||||||||||||||");
+    DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
+    userRef.set(false);
+    requestDisabled = false;
+    setState(() {
+    });
+  }
   @override
   Widget build(BuildContext context){
     DatabaseReference ref = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptTime");
@@ -288,16 +311,20 @@ void getActiveDrivers(BuildContext context) async {
             )
             ,
             ElevatedButton(
-              onPressed: () {
-                notifyActiveDrivers();
-              },
-              child: const Text('Request Help'),
+              onPressed: requestDisabled ? null : request,
               style: ElevatedButton.styleFrom(
-                  // icon: 
-                  backgroundColor: Colors.deepPurple[700],
+                backgroundColor: Colors.deepPurple[700],
+              ),
+              child: const Text('Request Help'),
             ),
+            const SizedBox(width: 50),
+            ElevatedButton(
+              onPressed: requestDisabled ? cancel : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[700],
+              ),
+              child: const Text('Cancel Request'),
             ),
-            const SizedBox(width: 200),
           ],
         ),
       )

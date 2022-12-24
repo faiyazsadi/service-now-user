@@ -1,15 +1,11 @@
 import 'dart:async';
 import 'dart:ui' as ui;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:service_now_user/global/global.dart';
 import 'package:location/location.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:service_now_user/service/car_service.dart';
-import '../authentication/login_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
