@@ -3,7 +3,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:service_now_user/main_screen/main_screen.dart';
-
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
 

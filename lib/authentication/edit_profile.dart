@@ -1,11 +1,10 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_now_user/main_screen/main_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
 
