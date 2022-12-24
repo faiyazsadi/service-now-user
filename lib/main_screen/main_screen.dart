@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:service_now_user/global/global.dart';
 import 'package:location/location.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:service_now_user/service/car_service.dart';
 import '../authentication/login_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -89,23 +90,198 @@ class _MainScreenState extends State<MainScreen> {
     
     return  Scaffold(
       appBar: AppBar(
-        title: const Text("Google Map"),
+
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //     const SnackBar(content: Text('This is a snackbar')));
+
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+                onPressed: (){},
+                icon: Icon(Icons.settings)
+            );
+          },
+        ),
+        title: const Text("Rifat Arefin",
+        style: TextStyle(
+          fontSize: 26,
+          fontFamily: "Ubuntu"
+        ),),
+        centerTitle: false,
+        backgroundColor: Colors.red.shade900,
+        toolbarHeight: 65,
+        actions: <Widget>[
+          TextButton(
+            onPressed: () { Scaffold.of(context).openDrawer(); },
+            child: CircleAvatar(
+              backgroundImage: AssetImage('images/service_now_logo.jpeg'),
+              radius: 17.0,
+            ),
+          ),
+          SizedBox(width: 10,),
+        ],
       ),
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: initialLocation,
-        onMapCreated: (GoogleMapController controller) {
-          _controller = controller;
-        },
-        markers: Set<Marker>.of(markers.values),
-        circles: Set<Circle>.of(circles.values),
-      ),
-      floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.location_searching),
-          onPressed: () {
-            // getCurrentLocation(context);
-            // getActiveUsers(context);
-          }),
+      body: Container(
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(width: 7, color: Colors.red.shade900),
+                ),
+              ),
+
+              height: 600,
+              child: GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition: initialLocation,
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller = controller;
+                  },
+                  markers: Set<Marker>.of(markers.values),
+                  circles: Set<Circle>.of(circles.values),
+                ),
+              ),
+
+          // floatingActionButton: FloatingActionButton(
+          //     child: const Icon(Icons.location_searching),
+          //     onPressed: () {
+          //       // getCurrentLocation(context);
+          //       // getActiveUsers(context);
+          //     }),
+
+            Container(
+              child: Column(
+                children: [
+                  SizedBox(height: 10,),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(9.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: TextButton(
+
+                              onPressed: (){
+                                Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService())));
+                              },
+                              child: Image(
+                                  image: AssetImage("images/service.png"),
+                                height: 60,
+                                width: 60,
+                              ),
+                          ),
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(9.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: TextButton(
+
+                            onPressed: (){},
+                            child: Image(
+                              image: AssetImage("images/fuel.png"),
+                              height: 60,
+                              width: 60,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(9.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: TextButton(
+                            onPressed: (){},
+                            child: Image(
+                              image: AssetImage("images/rent.png"),
+                              height: 60,
+                              width: 60,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(9.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+
+                          child: TextButton(
+
+                            onPressed: (){},
+                            child: Image(image: AssetImage("images/courier.png"),
+                              height: 60,
+                              width: 60,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(width: 16,),
+                      Text("Car Service",
+                      style: TextStyle(
+                        fontWeight: ui.FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.red.shade900,
+                        fontFamily: "Ubuntu",
+                      ),),
+
+                      SizedBox(width: 55,),
+                      Text("Fuel",
+                        style: TextStyle(
+                          fontWeight: ui.FontWeight.bold,
+                          fontSize: 15,
+                          color: Colors.red.shade900,
+                          fontFamily: "Ubuntu",
+                        ),),
+
+                      SizedBox(width: 55,),
+                      Text("Rent a Car",
+                        style: TextStyle(
+                          fontWeight: ui.FontWeight.bold,
+                          fontSize: 15,
+                          color: Colors.red.shade900,
+                          fontFamily: "Ubuntu",
+                        ),),
+
+                      SizedBox(width: 44,),
+                      Text("Courier",
+                        style: TextStyle(
+                          fontWeight: ui.FontWeight.bold,
+                          fontSize: 15,
+                          color: Colors.red.shade900,
+                          fontFamily: "Ubuntu",
+                        ),),
+
+                    ],
+                  )
+                ],
+              ),
+
+            )
+
+          ],
+        ),
+      )
     );
   }
 }

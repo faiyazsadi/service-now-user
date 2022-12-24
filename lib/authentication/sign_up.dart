@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:service_now_user/main_screen/main_screen.dart';
@@ -18,6 +19,48 @@ class _SignUpState extends State<SignUp> {
   final formKey = GlobalKey<FormState>(); //key for form
   String name="";
   int x = 1;
+
+  TextEditingController nameTextEditingController = TextEditingController();
+  TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController phoneTextEditingController = TextEditingController();
+
+
+  saveUserInfo() async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ProgressDialog(
+            message: "Processing. Please Wait...",
+          );
+        });
+        final User? firebaseUser = (await fAuth.createUserWithEmailAndPassword(
+          email: emailTextEditingController.text.trim(),
+          password: phoneTextEditingController.text.trim(),
+    ).catchError((msg) {
+      Navigator.pop(context);
+      Fluttertoast.showToast(msg: 'Error: ' + msg.toString());
+    })).user;
+
+    if (firebaseUser != null) {
+      Map userMap = {
+        "id": firebaseUser.uid,
+        "nane": nameTextEditingController.text.trim(),
+        "email": emailTextEditingController.text.trim(),
+        "password": phoneTextEditingController.text.trim()
+      };
+      DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
+      driversRef.child(firebaseUser.uid).set(userMap);
+      currentFirebaseuser = firebaseUser;
+      Fluttertoast.showToast(msg: 'Account has been created.');
+      Navigator.push(
+          context, MaterialPageRoute(builder: (c) => MainScreen()));
+    } else {
+      Navigator.pop(context);
+      Fluttertoast.showToast(msg: 'Account could not be created.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
@@ -66,7 +109,7 @@ class _SignUpState extends State<SignUp> {
                           color: Colors.grey.shade600,
                           icon: const Icon(Icons.add_a_photo_rounded),
                           onPressed: () {
-                            // ...
+
                           },
                         ),
                       ],
@@ -75,6 +118,7 @@ class _SignUpState extends State<SignUp> {
 
                   SizedBox(height: 15,),
                   TextFormField(
+                    controller: nameTextEditingController,
                     decoration: InputDecoration(
                       icon: Icon(Icons.person_rounded),
                       labelText: "Enter your name",
@@ -91,6 +135,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                   SizedBox(height: 30,),
                   TextFormField(
+                    controller: phoneTextEditingController,
                     decoration: InputDecoration(
                       icon: Icon(Icons.phone_android_rounded),
                       labelText: "Enter your Phone",
@@ -98,6 +143,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                   SizedBox(height: 30,),
                   TextFormField(
+                    controller: emailTextEditingController,
                     decoration: InputDecoration(
                       icon: Icon(Icons.email_rounded),
                       labelText: "Enter Your Email",
@@ -130,6 +176,9 @@ class _SignUpState extends State<SignUp> {
                           onPressed: () {
                               if(formKey.currentState!.validate()){
                                   x = 2;
+
+                                  saveUserInfo();
+
                                   showDialog(context: context, builder: (BuildContext contest){
                                     return AlertDialog(
                                       title: Text("Congratulations !!!",
@@ -159,54 +208,6 @@ class _SignUpState extends State<SignUp> {
                     ],
                   ),
                   SizedBox(height: 30,),
-                  // Center(
-                  //   child: Column(
-                  //     children: [
-                  //       IconButton(
-                  //         onPressed: (){
-                  //           if(x==2){
-                  //             Navigator.push(
-                  //                 context, MaterialPageRoute(builder: ((context) => MainScreen())));
-                  //           }
-                  //           else{
-                  //             showDialog(context: context, builder: (BuildContext contest){
-                  //               return AlertDialog(
-                  //                 title: Text("Warning !!!",
-                  //                   style: TextStyle(
-                  //                     fontSize: 28.0,
-                  //                     color: Colors.red.shade900,
-                  //                     fontFamily: "FredokaOne",
-                  //                   ),),
-                  //                 content: Padding(
-                  //                   padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 15.0, bottom: 20.0),
-                  //                   child: Text('You have to Sign Up first',
-                  //                     style: TextStyle(
-                  //                       fontSize: 20.0,
-                  //                       color: Colors.black45,
-                  //                       fontFamily: "Ubuntu",
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //               );
-                  //             });
-                  //           }
-                  //         },
-                  //         icon: Icon(Icons.home_rounded),
-                  //         iconSize: 70,
-                  //         color: Colors.grey.shade800,
-                  //
-                  //       ),
-                  //       Text("Go to home",
-                  //         style: TextStyle(
-                  //           fontSize: 18.0,
-                  //           color: Colors.red.shade900,
-                  //           fontFamily: "Ubuntu",
-                  //           fontWeight: FontWeight.bold,
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // )
                 ],
               ),
             ),

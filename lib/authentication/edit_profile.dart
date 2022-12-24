@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_now_user/main_screen/main_screen.dart';
-
+import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,8 +17,9 @@ class _EditProfileState extends State<EditProfile> {
   final formKey = GlobalKey<FormState>(); //key for form
   String name="";
   int x = 1;
-
+  late String imageUrl;
   XFile? image;
+
 
   final ImagePicker picker = ImagePicker();
 
@@ -53,9 +54,31 @@ class _EditProfileState extends State<EditProfile> {
                   SizedBox(width: 15,),
                   ElevatedButton(
                     //if user click this button, user can upload image from gallery
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pop(context);
                       getImage(ImageSource.gallery);
+
+                      if(image==null) return;
+
+                      String uniqueFileName=DateTime.now().microsecondsSinceEpoch.toString();
+                      //Get a reference to storage root
+                      Reference referenceRoot = FirebaseStorage.instance.ref();
+                      Reference referenceDirImages = referenceRoot.child('images');
+
+
+                      //Create a reference for the image to be stored
+                      Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+
+                      //Store the file
+                      try{
+                        await referenceImageToUpload.putFile(File(image!.path));
+                        imageUrl = await referenceImageToUpload.getDownloadURL();
+                      }catch(error){
+                        //Do something for handling error
+                      }
+
+
+
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll<Color>(Colors.red.shade900),
@@ -175,7 +198,6 @@ class _EditProfileState extends State<EditProfile> {
                               ),
                             ),
                           ),
-
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -188,7 +210,7 @@ class _EditProfileState extends State<EditProfile> {
                                   boxShadow: [BoxShadow(blurRadius: 0, color: Colors.black, spreadRadius: 0)],
                                 ),
                                 child: IconButton(
-                                  onPressed: (){
+                                  onPressed: () async{
                                     myAlert();
                                   },
                                   icon: Icon(Icons.edit_rounded,
@@ -239,11 +261,7 @@ class _EditProfileState extends State<EditProfile> {
                       }
                     },
                   ),
-
-
-
                   SizedBox(height: 80,),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -278,7 +296,9 @@ class _EditProfileState extends State<EditProfile> {
                                 ),
                                 actions: [
                                   TextButton(onPressed:(){
-                                    Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen())));
+
+
+                                    // Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen())));
                                   },
                                         child: Text(
                                           "OK",

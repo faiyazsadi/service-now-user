@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:service_now_user/authentication/sign_up.dart';
 import 'authentication/edit_profile.dart';
 import 'authentication/otp_input.dart';
+import 'main_screen/main_screen.dart';
 
 
 void main() async{
@@ -38,7 +39,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
     // TODO: implement initState
     super.initState();
     Future.delayed(const Duration(seconds: 3), (){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const EditProfile()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const MainScreen()));
     }
     );
   }
