@@ -195,47 +195,6 @@ void getActiveDrivers(BuildContext context) async {
     });
   }
 
-  void showDriverDistance() {
-
-  }
-
-  // void checkAccpetance(BuildContext context) async {
-  //   DatabaseReference acceptRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
-  //   DatabaseReference timeRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptTime");
-  //   final driver = await acceptRef.get();
-  //   final time = await timeRef.get();
-  //   timeRef.onValue.listen((event) async {
-  //     currAcceptTime = time.value.toString();
-  //     if(currAcceptTime != prevAcceptTime) {
-  //       prevAcceptTime = currAcceptTime;
-  //       DatabaseReference mylatRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("latitude");
-  //       DatabaseReference mylonRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("longitude");
-  //       var myLatitude, myLongitude;
-  //       final mylat = await mylatRef.get();
-  //       final mylon = await mylonRef.get().then((mylon) => {
-  //         myLatitude = mylat.value,
-  //         myLongitude = mylon.value
-  //       });
-  //       PointLatLng myLocation =  PointLatLng(myLatitude, myLongitude);
-
-  //       DatabaseReference acceptRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
-  //       final accepted_by = await acceptRef.get();
-
-  //       DatabaseReference latRef = FirebaseDatabase.instance.ref().child("drivers").child(accepted_by.value.toString()).child("latitude");
-  //       DatabaseReference lonRef = FirebaseDatabase.instance.ref().child("drivers").child(accepted_by.value.toString()).child("longitude");
-
-  //       var driverLatitude, driverLongitude;
-  //       final lat = await latRef.get();
-  //       final lon = await lonRef.get().then((lon) => {
-  //           driverLatitude = lat.value,
-  //           driverLongitude = lon.value,
-  //       });
-  //       PointLatLng driverLocation = PointLatLng(driverLatitude, driverLongitude);
-  //       makeLines(myLocation, driverLocation);
-  //     }
-  //   });
-  // } 
-
   getPositions() async {
     DatabaseReference mylatRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("latitude");
     DatabaseReference mylonRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("longitude");

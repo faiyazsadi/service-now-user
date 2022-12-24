@@ -43,7 +43,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
       // send user to main screen
       if (fAuth.currentUser != null) {
         currentFirebaseuser = fAuth.currentUser;
-        DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users/${currentFirebaseuser}/AcceptTime");
+        DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users/${currentFirebaseuser!.uid}/AcceptTime");
         final snapshot = await userRef.get();
         prevAcceptTime = snapshot.value.toString();
 
