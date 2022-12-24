@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:service_now_user/authentication/sign_up.dart';
 import 'authentication/edit_profile.dart';
 import 'authentication/otp_input.dart';
+import 'global/global.dart';
 import 'main_screen/main_screen.dart';
 
 
@@ -34,14 +38,31 @@ class Splash extends StatefulWidget {
 }
 class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
 
+  startTimer() {
+    Timer(const Duration(seconds: 3), () async {
+      // send user to main screen
+      if (fAuth.currentUser != null) {
+        currentFirebaseuser = fAuth.currentUser;
+        Navigator.push(
+            context, MaterialPageRoute(builder: ((context) => const MainScreen())));
+            DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
+            driversRef.child(currentFirebaseuser!.uid).update({"isActive": true});
+      } else {
+        Navigator.push(
+            context, MaterialPageRoute(builder: ((context) => const SignUp())));
+      }
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(const Duration(seconds: 3), (){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const MainScreen()));
-    }
-    );
+    // Future.delayed(const Duration(seconds: 3), (){
+    //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const SignUp()));
+    // }
+    // );
+    startTimer();
   }
 
   @override

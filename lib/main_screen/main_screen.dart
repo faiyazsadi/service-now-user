@@ -35,9 +35,9 @@ class _MainScreenState extends State<MainScreen> {
     return byteData.buffer.asUint8List();
   }
 
-  Future<void> updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData, var uid) async {
+  void updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData, var uid) async {
     LatLng latlng = LatLng(newLocalData.latitude!, newLocalData.longitude!);
-    setState(() async {
+    setState(() {
       marker = Marker(
           markerId: MarkerId(uid),
           position: latlng,
@@ -113,7 +113,7 @@ class _MainScreenState extends State<MainScreen> {
         actions: <Widget>[
           TextButton(
             onPressed: () { Scaffold.of(context).openDrawer(); },
-            child: CircleAvatar(
+            child: const CircleAvatar(
               backgroundImage: AssetImage('images/service_now_logo.jpeg'),
               radius: 17.0,
             ),
@@ -121,165 +121,167 @@ class _MainScreenState extends State<MainScreen> {
           SizedBox(width: 10,),
         ],
       ),
-      body: Container(
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(width: 7, color: Colors.red.shade900),
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(width: 7, color: Colors.red.shade900),
+                  ),
                 ),
-              ),
-
-              height: 600,
-              child: GoogleMap(
-                  mapType: MapType.normal,
-                  initialCameraPosition: initialLocation,
-                  onMapCreated: (GoogleMapController controller) {
-                    _controller = controller;
-                  },
-                  markers: Set<Marker>.of(markers.values),
-                  circles: Set<Circle>.of(circles.values),
+      
+                height: 600,
+                child: GoogleMap(
+                    mapType: MapType.normal,
+                    initialCameraPosition: initialLocation,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller = controller;
+                    },
+                    markers: Set<Marker>.of(markers.values),
+                    circles: Set<Circle>.of(circles.values),
+                  ),
                 ),
-              ),
-
-          // floatingActionButton: FloatingActionButton(
-          //     child: const Icon(Icons.location_searching),
-          //     onPressed: () {
-          //       // getCurrentLocation(context);
-          //       // getActiveUsers(context);
-          //     }),
-
-            Container(
-              child: Column(
-                children: [
-                  SizedBox(height: 10,),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(9.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 2),
-                            borderRadius: BorderRadius.circular(10),
+      
+            // floatingActionButton: FloatingActionButton(
+            //     child: const Icon(Icons.location_searching),
+            //     onPressed: () {
+            //       // getCurrentLocation(context);
+            //       // getActiveUsers(context);
+            //     }),
+      
+              Container(
+                child: Column(
+                  children: [
+                    SizedBox(height: 10,),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(9.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(width: 2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: TextButton(
+      
+                                onPressed: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService())));
+                                },
+                                child: Image(
+                                    image: AssetImage("images/service.png"),
+                                  height: 60,
+                                  width: 60,
+                                ),
+                            ),
                           ),
-                          child: TextButton(
-
-                              onPressed: (){
-                                Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService())));
-                              },
+                        ),
+      
+                        Padding(
+                          padding: const EdgeInsets.all(9.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(width: 2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: TextButton(
+      
+                              onPressed: (){},
                               child: Image(
-                                  image: AssetImage("images/service.png"),
+                                image: AssetImage("images/fuel.png"),
                                 height: 60,
                                 width: 60,
                               ),
-                          ),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(9.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 2),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: TextButton(
-
-                            onPressed: (){},
-                            child: Image(
-                              image: AssetImage("images/fuel.png"),
-                              height: 60,
-                              width: 60,
                             ),
                           ),
                         ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(9.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 2),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: TextButton(
-                            onPressed: (){},
-                            child: Image(
-                              image: AssetImage("images/rent.png"),
-                              height: 60,
-                              width: 60,
+      
+                        Padding(
+                          padding: const EdgeInsets.all(9.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(width: 2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: TextButton(
+                              onPressed: (){},
+                              child: Image(
+                                image: AssetImage("images/rent.png"),
+                                height: 60,
+                                width: 60,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(9.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(width: 2),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-
-                          child: TextButton(
-
-                            onPressed: (){},
-                            child: Image(image: AssetImage("images/courier.png"),
-                              height: 60,
-                              width: 60,
+                        Padding(
+                          padding: const EdgeInsets.all(9.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(width: 2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+      
+                            child: TextButton(
+      
+                              onPressed: (){},
+                              child: Image(image: AssetImage("images/courier.png"),
+                                height: 60,
+                                width: 60,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(width: 16,),
-                      Text("Car Service",
-                      style: TextStyle(
-                        fontWeight: ui.FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.red.shade900,
-                        fontFamily: "Ubuntu",
-                      ),),
-
-                      SizedBox(width: 55,),
-                      Text("Fuel",
+      
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(width: 16,),
+                        Text("Car Service",
                         style: TextStyle(
                           fontWeight: ui.FontWeight.bold,
                           fontSize: 15,
                           color: Colors.red.shade900,
                           fontFamily: "Ubuntu",
                         ),),
-
-                      SizedBox(width: 55,),
-                      Text("Rent a Car",
-                        style: TextStyle(
-                          fontWeight: ui.FontWeight.bold,
-                          fontSize: 15,
-                          color: Colors.red.shade900,
-                          fontFamily: "Ubuntu",
-                        ),),
-
-                      SizedBox(width: 44,),
-                      Text("Courier",
-                        style: TextStyle(
-                          fontWeight: ui.FontWeight.bold,
-                          fontSize: 15,
-                          color: Colors.red.shade900,
-                          fontFamily: "Ubuntu",
-                        ),),
-
-                    ],
-                  )
-                ],
-              ),
-
-            )
-
-          ],
+      
+                        SizedBox(width: 55,),
+                        Text("Fuel",
+                          style: TextStyle(
+                            fontWeight: ui.FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.red.shade900,
+                            fontFamily: "Ubuntu",
+                          ),),
+      
+                        SizedBox(width: 55,),
+                        Text("Rent a Car",
+                          style: TextStyle(
+                            fontWeight: ui.FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.red.shade900,
+                            fontFamily: "Ubuntu",
+                          ),),
+      
+                        SizedBox(width: 44,),
+                        Text("Courier",
+                          style: TextStyle(
+                            fontWeight: ui.FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.red.shade900,
+                            fontFamily: "Ubuntu",
+                          ),),
+      
+                      ],
+                    )
+                  ],
+                ),
+      
+              )
+      
+            ],
+          ),
         ),
       )
     );

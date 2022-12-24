@@ -44,7 +44,7 @@ class _SignUpState extends State<SignUp> {
     if (firebaseUser != null) {
       Map userMap = {
         "id": firebaseUser.uid,
-        "nane": nameTextEditingController.text.trim(),
+        "name": nameTextEditingController.text.trim(),
         "email": emailTextEditingController.text.trim(),
         "password": phoneTextEditingController.text.trim()
       };
@@ -53,7 +53,7 @@ class _SignUpState extends State<SignUp> {
       currentFirebaseuser = firebaseUser;
       Fluttertoast.showToast(msg: 'Account has been created.');
       Navigator.push(
-          context, MaterialPageRoute(builder: (c) => MainScreen()));
+          context, MaterialPageRoute(builder: (c) => const MainScreen()));
     } else {
       Navigator.pop(context);
       Fluttertoast.showToast(msg: 'Account could not be created.');
@@ -198,6 +198,8 @@ class _SignUpState extends State<SignUp> {
                                       ),
                                     );
                                   });
+
+                                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const MainScreen()));
                               }
                             },
                         child: const Icon(Icons.navigate_next_rounded),
