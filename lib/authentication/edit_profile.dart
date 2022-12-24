@@ -18,14 +18,14 @@ class _EditProfileState extends State<EditProfile> {
   int x = 1;
   late String imageUrl;
   XFile? image;
-
-
   final ImagePicker picker = ImagePicker();
 
   //we can upload image from camera or from gallery based on parameter
   Future getImage(ImageSource media) async {
     var img = await picker.pickImage(source: media);
-
+    print("##########################");
+    print(img!.path);
+    print("##########################");
     setState(() {
       image = img;
     });
@@ -75,9 +75,6 @@ class _EditProfileState extends State<EditProfile> {
                       }catch(error){
                         //Do something for handling error
                       }
-
-
-
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll<Color>(Colors.red.shade900),

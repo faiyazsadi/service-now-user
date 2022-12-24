@@ -10,9 +10,6 @@ import '../global/global.dart';
 
 
 class CarService extends StatefulWidget {
-  // final myLatitude, myLongitude, userLatitude, userLongitude;
-  // final bool changedScreen;
-  // const HomeTabPage({super.key, required this.myLatitude, required this.myLongitude, required this.userLatitude, required this.userLongitude, required this.changedScreen});
   const CarService({super.key});
   @override
   State<CarService> createState() => _CarServiceState();
@@ -102,10 +99,10 @@ void getCurrentLocation(BuildContext context) async {
       Uint8List imageData = await getMarker(context);
       var location = await _locationTracker.getLocation();
       updateMarkerAndCircle(location, imageData, currentFirebaseuser!.uid);
-      DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
-      driversRef.child(currentFirebaseuser!.uid).update({"latitude": location.latitude, "longitude": location.longitude});
+      DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users");
+      usersRef.child(currentFirebaseuser!.uid).update({"latitude": location.latitude, "longitude": location.longitude});
       
-      DatabaseReference userConnection = FirebaseDatabase.instance.ref().child("drivers/${currentFirebaseuser!.uid}/isActive");
+      DatabaseReference userConnection = FirebaseDatabase.instance.ref().child("users/${currentFirebaseuser!.uid}/isActive");
       userConnection.onDisconnect().set(false);
 
       if (_locationSubscription != null) {
@@ -115,8 +112,8 @@ void getCurrentLocation(BuildContext context) async {
 
       _locationSubscription = _locationTracker.onLocationChanged.listen((newLocalData) {
         if (_controller != null) {
-          driversRef.child(currentFirebaseuser!.uid).update({"latitude": newLocalData.latitude, "longitude": newLocalData.longitude});
-          DatabaseReference userConnection = FirebaseDatabase.instance.ref().child("drivers/${currentFirebaseuser!.uid}/isActive");
+          usersRef.child(currentFirebaseuser!.uid).update({"latitude": newLocalData.latitude, "longitude": newLocalData.longitude});
+          DatabaseReference userConnection = FirebaseDatabase.instance.ref().child("users/${currentFirebaseuser!.uid}/isActive");
           userConnection.onDisconnect().set(false);
           _controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
               bearing: 192.8334901395799,
@@ -134,7 +131,7 @@ void getCurrentLocation(BuildContext context) async {
     }
   }
 
-void getActiveUsers(BuildContext context) async {
+void getActiveDrivers(BuildContext context) async {
   try {
     if (_locationSubscriptionOthers != null) {
       _locationSubscriptionOthers!.cancel();
@@ -184,30 +181,94 @@ void getActiveUsers(BuildContext context) async {
     }
   }
 }
-void notifyActiveDrivers() async {
-  DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
-  final snapshot = await driversRef.get();
-  final drivers = snapshot.value as Map<dynamic, dynamic>;
-  drivers.forEach((key, value) async { 
-    if(value["id"] != currentFirebaseuser!.uid && value["isActive"] == true) {
-      print(value["id"]);
-      DateTime time = DateTime.now();
-      await driversRef.child(value["id"]).update({"request_from": currentFirebaseuser!.uid});
-      await driversRef.child(value["id"]).update({"request_time": time.toString()});
-    }
-  });
-}
+
+  void notifyActiveDrivers() async {
+    DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
+    final snapshot = await driversRef.get();
+    final drivers = snapshot.value as Map<dynamic, dynamic>;
+    drivers.forEach((key, value) async { 
+      if(value["id"] != currentFirebaseuser!.uid && value["isActive"] == true) {
+        DateTime time = DateTime.now();
+        await driversRef.child(value["id"]).update({"request_from": currentFirebaseuser!.uid});
+        await driversRef.child(value["id"]).update({"request_time": time.toString()});
+      }
+    });
+  }
+
+  void showDriverDistance() {
+
+  }
+
+  // void checkAccpetance(BuildContext context) async {
+  //   DatabaseReference acceptRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
+  //   DatabaseReference timeRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptTime");
+  //   final driver = await acceptRef.get();
+  //   final time = await timeRef.get();
+  //   timeRef.onValue.listen((event) async {
+  //     currAcceptTime = time.value.toString();
+  //     if(currAcceptTime != prevAcceptTime) {
+  //       prevAcceptTime = currAcceptTime;
+  //       DatabaseReference mylatRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("latitude");
+  //       DatabaseReference mylonRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("longitude");
+  //       var myLatitude, myLongitude;
+  //       final mylat = await mylatRef.get();
+  //       final mylon = await mylonRef.get().then((mylon) => {
+  //         myLatitude = mylat.value,
+  //         myLongitude = mylon.value
+  //       });
+  //       PointLatLng myLocation =  PointLatLng(myLatitude, myLongitude);
+
+  //       DatabaseReference acceptRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
+  //       final accepted_by = await acceptRef.get();
+
+  //       DatabaseReference latRef = FirebaseDatabase.instance.ref().child("drivers").child(accepted_by.value.toString()).child("latitude");
+  //       DatabaseReference lonRef = FirebaseDatabase.instance.ref().child("drivers").child(accepted_by.value.toString()).child("longitude");
+
+  //       var driverLatitude, driverLongitude;
+  //       final lat = await latRef.get();
+  //       final lon = await lonRef.get().then((lon) => {
+  //           driverLatitude = lat.value,
+  //           driverLongitude = lon.value,
+  //       });
+  //       PointLatLng driverLocation = PointLatLng(driverLatitude, driverLongitude);
+  //       makeLines(myLocation, driverLocation);
+  //     }
+  //   });
+  // } 
+
+  getPositions() async {
+    DatabaseReference mylatRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("latitude");
+    DatabaseReference mylonRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("longitude");
+    var myLatitude, myLongitude;
+    final mylat = await mylatRef.get();
+    final mylon = await mylonRef.get().then((mylon) => {
+      myLatitude = mylat.value,
+      myLongitude = mylon.value
+    });
+    PointLatLng myLocation =  PointLatLng(myLatitude, myLongitude);
+
+    DatabaseReference acceptRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
+    final accepted_by = await acceptRef.get();
+
+    DatabaseReference latRef = FirebaseDatabase.instance.ref().child("drivers").child(accepted_by.value.toString()).child("latitude");
+    DatabaseReference lonRef = FirebaseDatabase.instance.ref().child("drivers").child(accepted_by.value.toString()).child("longitude");
+
+    var driverLatitude, driverLongitude;
+    final lat = await latRef.get();
+    final lon = await lonRef.get().then((lon) => {
+        driverLatitude = lat.value,
+        driverLongitude = lon.value,
+    });
+    PointLatLng driverLocation = PointLatLng(driverLatitude, driverLongitude);
+    makeLines(myLocation, driverLocation);
+  }
+
   @override 
   initState() {
     super.initState();
     getCurrentLocation(context);
-    getActiveUsers(context);
-
-    // if(widget.changedScreen == true) {
-    //   PointLatLng myLocation = PointLatLng(widget.myLatitude, widget.myLongitude);
-    //   PointLatLng userLocation = PointLatLng(widget.userLatitude, widget.userLongitude);
-    //   makeLines(myLocation, userLocation);
-    // }
+    getActiveDrivers(context);
+    // checkAccpetance(context);
   }
   @override
   void dispose() {
@@ -220,7 +281,9 @@ void notifyActiveDrivers() async {
     super.dispose();
   }
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
+    DatabaseReference ref = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptTime");
+    final snapshot = ref.get().asStream();
     return  Scaffold(
       appBar: AppBar(
         title: const Text("Google Map"),
@@ -240,6 +303,21 @@ void notifyActiveDrivers() async {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
+            StreamBuilder(
+              stream: snapshot,
+              builder: (BuildContext context, AsyncSnapshot<DataSnapshot> snapshot) {
+                if(snapshot.hasData) {
+                  currAcceptTime = snapshot.data!.value.toString();
+                  if(prevAcceptTime != currAcceptTime) {
+                    print(snapshot.data!.value);
+                    getPositions();
+                    prevAcceptTime = currAcceptTime;
+                  }
+                }
+                return const Text("");
+              }
+            )
+            ,
             ElevatedButton(
               onPressed: () {
                 notifyActiveDrivers();

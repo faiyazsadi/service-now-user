@@ -23,8 +23,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const Splash(),
+    return const MaterialApp(
+      home: Splash(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -43,14 +43,18 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
       // send user to main screen
       if (fAuth.currentUser != null) {
         currentFirebaseuser = fAuth.currentUser;
-        Navigator.push(
-            context, MaterialPageRoute(builder: ((context) => const MainScreen())));
-            DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
+        DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users/${currentFirebaseuser}/AcceptTime");
+        final snapshot = await userRef.get();
+        prevAcceptTime = snapshot.value.toString();
+
+        Navigator.push(context, MaterialPageRoute(builder: ((context) => const MainScreen())));
+            DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
             driversRef.child(currentFirebaseuser!.uid).update({"isActive": true});
       } else {
         Navigator.push(
             context, MaterialPageRoute(builder: ((context) => const SignUp())));
       }
+      // Navigator.push(context, MaterialPageRoute(builder: ((context) => const SignUp())));
     });
   }
 

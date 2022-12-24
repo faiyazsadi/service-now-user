@@ -46,7 +46,8 @@ class _SignUpState extends State<SignUp> {
         "id": firebaseUser.uid,
         "name": nameTextEditingController.text.trim(),
         "email": emailTextEditingController.text.trim(),
-        "password": phoneTextEditingController.text.trim()
+        "password": phoneTextEditingController.text.trim(),
+        "isActive": true
       };
       DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
       driversRef.child(firebaseUser.uid).set(userMap);
