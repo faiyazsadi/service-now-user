@@ -268,7 +268,7 @@ class _MainScreenState extends State<MainScreen> {
                                   child: TextButton(
 
                                     onPressed: (){
-                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const CarService()));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>const CarService()));
                                     },
                                     child: Image(
                                       image: AssetImage("images/service.png"),

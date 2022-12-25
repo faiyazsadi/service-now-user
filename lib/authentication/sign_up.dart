@@ -188,6 +188,8 @@ class _SignUpState extends State<SignUp> {
         "email": emailTextEditingController.text.trim(),
         "password": phoneTextEditingController.text.trim(),
         "image": imageUrl,
+        "isActive": true,
+        "isBusy": false,
       };
 
 
