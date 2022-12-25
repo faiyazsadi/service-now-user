@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_now_user/main_screen/main_screen.dart';
@@ -5,6 +9,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../global/global.dart';
+import '../widgets/progress_dialog.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -19,7 +26,6 @@ class _EditProfileState extends State<EditProfile> {
   int x = 1;
   late String imageUrl;
   XFile? image;
-
 
   final ImagePicker picker = ImagePicker();
 
@@ -38,62 +44,67 @@ class _EditProfileState extends State<EditProfile> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Text('Choose media to select!',
-            style: TextStyle(
-              fontSize: 23,
-              fontFamily: "Ubuntu",
-              color: Colors.red.shade900,
-              fontWeight: FontWeight.bold,
-            ),),
+              style: TextStyle(
+                fontSize: 23,
+                fontFamily: "Ubuntu",
+                color: Colors.red.shade900,
+                fontWeight: FontWeight.bold,
+              ),),
             content: Container(
               height: MediaQuery.of(context).size.height / 6,
               child: Column(
                 children: [
-                  SizedBox(width: 15,),
+                  SizedBox(width: 25,),
                   ElevatedButton(
                     //if user click this button, user can upload image from gallery
-                    onPressed: () async {
+                    onPressed: (){
                       Navigator.pop(context);
                       getImage(ImageSource.gallery);
 
-                      if(image==null) return;
-
-                      String uniqueFileName=DateTime.now().microsecondsSinceEpoch.toString();
-                      //Get a reference to storage root
-                      Reference referenceRoot = FirebaseStorage.instance.ref();
-                      Reference referenceDirImages = referenceRoot.child('images');
-
-
-                      //Create a reference for the image to be stored
-                      Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
-
-                      //Store the file
-                      try{
-                        await referenceImageToUpload.putFile(File(image!.path));
-                        imageUrl = await referenceImageToUpload.getDownloadURL();
-                      }catch(error){
-                        //Do something for handling error
-                      }
+                      // if(image==null) return;
+                      //
+                      // String uniqueFileName=DateTime.now().microsecondsSinceEpoch.toString();
+                      // //Get a reference to storage root
+                      // Reference referenceRoot = FirebaseStorage.instance.ref();
+                      // Reference referenceDirImages = referenceRoot.child('images');
+                      //
+                      //
+                      // //Create a reference for the image to be stored
+                      // Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+                      //
+                      // //Store the file
+                      // try{
+                      //   await referenceImageToUpload.putFile(File(image!.path));
+                      //   imageUrl = await referenceImageToUpload.getDownloadURL();
+                      // }catch(error){
+                      //   //Do something for handling error
+                      // }
 
 
 
                     },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll<Color>(Colors.red.shade900),
+                    // style: ButtonStyle(
+                    //   backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
+                    // ),
+
+                    style: ElevatedButton.styleFrom(
+                      elevation: 15,
+                      primary: Colors.white,
+                      shadowColor: Colors.black,
                     ),
                     child: Row(
                       children: [
                         Icon(Icons.image,
-                        color: Colors.white,
+                          color: Colors.red.shade900,
                           size: 20,
                         ),
                         SizedBox(width: 15,),
                         Text('Gallery',style: TextStyle(
                           fontFamily: "Ubuntu",
                           fontSize: 20,
-                          color: Colors.white,
+                          color: Colors.red.shade900,
                         ),),
                       ],
                     ),
@@ -101,20 +112,24 @@ class _EditProfileState extends State<EditProfile> {
                   SizedBox(height: 10,),
                   ElevatedButton(
                     //if user click this button. user can upload image from camera
+                    style: ElevatedButton.styleFrom(
+                      elevation: 15,
+                      primary: Colors.white,
+                      shadowColor: Colors.black,
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                       getImage(ImageSource.camera);
                     },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll<Color>(Colors.red.shade900),
-                    ),
                     child: Row(
                       children: [
-                        Icon(Icons.camera),
+                        Icon(Icons.camera,
+                          color: Colors.red.shade900,),
                         SizedBox(width: 15,),
                         Text('Camera', style: TextStyle(
                           fontFamily: "Ubuntu",
                           fontSize: 20,
+                          color: Colors.red.shade900,
                         ),),
                       ],
                     ),
@@ -126,7 +141,126 @@ class _EditProfileState extends State<EditProfile> {
         });
   }
 
+  TextEditingController nameTextEditingController = TextEditingController();
+  TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController phoneTextEditingController = TextEditingController();
 
+  saveUserInfo() async {
+
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.transparent,
+        useSafeArea: false,
+        builder: (BuildContext context) {
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 2, color: Colors.red),
+            ),
+            child: ProgressDialog(
+              message: "Processing. Please Wait...",
+            ),
+          );
+        });
+
+
+    final User? firebaseUser = (await fAuth.createUserWithEmailAndPassword(
+      email: emailTextEditingController.text.trim(),
+      password: phoneTextEditingController.text.trim(),
+    ).catchError((msg) {
+      Navigator.pop(context);
+      showDialog(context: context, builder: (BuildContext contest){
+        return AlertDialog(
+          title: Text("Opps!!",
+            style: TextStyle(
+              fontSize: 28.0,
+              color: Colors.red.shade900,
+              fontFamily: "FredokaOne",
+            ),),
+          content: Padding(
+            padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 15.0, bottom: 20.0),
+            child: Text('This email already exists or incorrect email format.',
+              style: TextStyle(
+                fontSize: 20.0,
+                color: Colors.black45,
+                fontFamily: "Ubuntu",
+              ),
+            ),
+          ),
+        );
+      });
+
+    })).user;
+
+    if(imageUrl.isEmpty){
+      print("something went wrong");
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("PLease upload an image")));
+      return;
+    }
+
+    if (firebaseUser != null) {
+      Map userMap = {
+        "id": firebaseUser.uid,
+        "name": nameTextEditingController.text.trim(),
+        "email": emailTextEditingController.text.trim(),
+        "password": phoneTextEditingController.text.trim(),
+        "image": imageUrl,
+      };
+
+
+      DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
+      driversRef.child(firebaseUser.uid).set(userMap);
+      currentFirebaseuser = firebaseUser;
+
+      showDialog(context: context, builder: (BuildContext contest){
+        return AlertDialog(
+          title: Text("Congratulation!!",
+            style: TextStyle(
+              fontSize: 28.0,
+              color: Colors.red.shade900,
+              fontFamily: "FredokaOne",
+            ),),
+          content: Padding(
+            padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 15.0, bottom: 20.0),
+            child: Text("Account has been created successfully",
+              style: TextStyle(
+                fontSize: 20.0,
+                color: Colors.black45,
+                fontFamily: "Ubuntu",
+              ),
+            ),
+          ),
+        );
+      });
+      Timer(Duration(seconds: 2), () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (c) => MainScreen()));
+      });
+
+    } else {
+      Navigator.pop(context);
+      showDialog(context: context, builder: (BuildContext contest){
+        return AlertDialog(
+          title: Text("Opps!!",
+            style: TextStyle(
+              fontSize: 28.0,
+              color: Colors.red.shade900,
+              fontFamily: "FredokaOne",
+            ),),
+          content: Padding(
+            padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 15.0, bottom: 20.0),
+            child: Text("Account could not be created",
+              style: TextStyle(
+                fontSize: 20.0,
+                color: Colors.black45,
+                fontFamily: "Ubuntu",
+              ),
+            ),
+          ),
+        );
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -175,8 +309,7 @@ class _EditProfileState extends State<EditProfile> {
                                 backgroundColor: Colors.red.shade900,
                                 //backgroundImage: AssetImage('images/service_now_logo.jpeg'),
                                 child: Container(
-                                  child: image != null
-                                      ? Padding(
+                                  child: image != null ? Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 0),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(60),
@@ -273,61 +406,88 @@ class _EditProfileState extends State<EditProfile> {
                         fontFamily: "Ubuntu",
                       ),),
                       FloatingActionButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if(formKey.currentState!.validate()){
                             x = 2;
-                            showDialog(context: context, builder: (BuildContext contest){
-                              return AlertDialog(
-                                title: Text("Warning !!!",
-                                  style: TextStyle(
-                                    fontSize: 28.0,
-                                    color: Colors.red.shade900,
-                                    fontFamily: "FredokaOne",
-                                  ),),
-                                content: Padding(
-                                  padding: const EdgeInsets.only(left: 0.0, right: 10.0, top: 10.0),
-                                    child: Text('Are you sure?',
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.black45,
-                                      fontFamily: "Ubuntu",
-                                    ),
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(onPressed:(){
+
+                            if(image==null) return;
+
+                            String uniqueFileName=DateTime.now().microsecondsSinceEpoch.toString();
+
+                            //Get a reference to storage root
+                            Reference referenceRoot = FirebaseStorage.instance.ref();
+                            Reference referenceDirImages = referenceRoot.child('images');
 
 
-                                    // Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen())));
-                                  },
-                                        child: Text(
-                                          "OK",
-                                          style: TextStyle(
-                                            fontSize: 20.0,
-                                            color: Colors.red.shade900,
-                                            fontFamily: "Ubuntu",
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        )
-                                    ),
-                                  TextButton(onPressed:(){
-                                    Navigator.of(context).pop();
-                                  },
-                                        child: Text(
-                                          "CANCEL",
-                                          style: TextStyle(
-                                            fontSize: 20.0,
-                                            color: Colors.red.shade900,
-                                            fontFamily: "Ubuntu",
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        )
-                                    ),
-                                  SizedBox(width: 0,)
-                                ],
-                              );
+                            //Create a reference for the image to be stored
+                            Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+
+                            //Store the file
+                            try{
+                            await referenceImageToUpload.putFile(File(image!.path)).then((p0) async {
+                            imageUrl = await referenceImageToUpload.getDownloadURL();
+                            print("The imageurl is: "+imageUrl.toString());
                             });
-                          }
+                            //imageUrl = await referenceImageToUpload.getDownloadURL();
+                            }catch(error){
+                            //Do something for handling error
+                            print("Shut the fuck u[" + error.toString());
+                            }
+                            saveUserInfo();
+    }
+
+
+                            // showDialog(context: context, builder: (BuildContext contest){
+                            //   return AlertDialog(
+                            //     title: Text("Warning !!!",
+                            //       style: TextStyle(
+                            //         fontSize: 28.0,
+                            //         color: Colors.red.shade900,
+                            //         fontFamily: "FredokaOne",
+                            //       ),),
+                            //     content: Padding(
+                            //       padding: const EdgeInsets.only(left: 0.0, right: 10.0, top: 10.0),
+                            //         child: Text('Are you sure?',
+                            //         style: TextStyle(
+                            //           fontSize: 20.0,
+                            //           color: Colors.black45,
+                            //           fontFamily: "Ubuntu",
+                            //         ),
+                            //       ),
+                            //     ),
+                            //     actions: [
+                            //       TextButton(onPressed:(){
+                            //
+                            //
+                            //         // Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen())));
+                            //       },
+                            //             child: Text(
+                            //               "OK",
+                            //               style: TextStyle(
+                            //                 fontSize: 20.0,
+                            //                 color: Colors.red.shade900,
+                            //                 fontFamily: "Ubuntu",
+                            //                 fontWeight: FontWeight.bold,
+                            //               ),
+                            //             )
+                            //         ),
+                            //       TextButton(onPressed:(){
+                            //         Navigator.of(context).pop();
+                            //       },
+                            //             child: Text(
+                            //               "CANCEL",
+                            //               style: TextStyle(
+                            //                 fontSize: 20.0,
+                            //                 color: Colors.red.shade900,
+                            //                 fontFamily: "Ubuntu",
+                            //                 fontWeight: FontWeight.bold,
+                            //               ),
+                            //             )
+                            //         ),
+                            //       SizedBox(width: 0,)
+                            //     ],
+                            //   );
+                            // });
                         },
                         child: const Icon(Icons.check_rounded),
                         backgroundColor: Colors.red[900],
