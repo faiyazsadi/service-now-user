@@ -188,6 +188,8 @@ class _SignUpState extends State<SignUp> {
         "email": emailTextEditingController.text.trim(),
         "password": phoneTextEditingController.text.trim(),
         "image": imageUrl,
+        "isActive": true,
+        "isBusy": false
       };
 
 
@@ -219,6 +221,11 @@ class _SignUpState extends State<SignUp> {
         Navigator.push(
             context, MaterialPageRoute(builder: (c) => MainScreen()));
       });
+
+
+      //Fluttertoast.showToast(msg: 'Account has been created.');
+      //Navigator.push(
+          //context, MaterialPageRoute(builder: (c) => const MainScreen()));
 
     } else {
       Navigator.pop(context);
@@ -437,6 +444,7 @@ class _SignUpState extends State<SignUp> {
                             saveUserInfo();
                           }
                         },
+
                         child: const Icon(Icons.navigate_next_rounded),
                         backgroundColor: Colors.red[900],
                       ),

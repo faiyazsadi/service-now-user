@@ -1,7 +1,9 @@
 import 'dart:async';
 
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,9 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:service_now_user/authentication/view_profile.dart';
 import 'package:service_now_user/global/global.dart';
 import 'package:location/location.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:service_now_user/service/car_service.dart';
-import '../authentication/login_screen.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -39,9 +39,9 @@ class _MainScreenState extends State<MainScreen> {
     return byteData.buffer.asUint8List();
   }
 
-  Future<void> updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData, var uid) async {
+  void updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData, var uid) async {
     LatLng latlng = LatLng(newLocalData.latitude!, newLocalData.longitude!);
-    setState(() async {
+    setState(() {
       marker = Marker(
           markerId: MarkerId(uid),
           position: latlng,
@@ -228,6 +228,7 @@ class _MainScreenState extends State<MainScreen> {
                     circles: Set<Circle>.of(circles.values),
                   ),
                 ),
+
             // floatingActionButton: FloatingActionButton(
             //     child: const Icon(Icons.location_searching),
             //     onPressed: () {
@@ -403,7 +404,6 @@ class _MainScreenState extends State<MainScreen> {
 
                 ),
               ),
-
             ],
           ),
         ),

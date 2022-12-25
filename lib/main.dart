@@ -1,13 +1,22 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
+
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_now_user/authentication/sign_up.dart';
 import 'authentication/edit_profile.dart';
 import 'authentication/otp_input.dart';
+
 import 'authentication/view_profile.dart';
+
+import 'global/global.dart';
 import 'main_screen/main_screen.dart';
 import 'dart:io';
 
@@ -22,8 +31,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const Splash(),
+    return const MaterialApp(
+      home: Splash(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -38,15 +47,36 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
 
+  startTimer() {
+    Timer(const Duration(seconds: 3), () async {
+      // send user to main screen
+      if (fAuth.currentUser != null) {
+        currentFirebaseuser = fAuth.currentUser;
+        DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users/${currentFirebaseuser!.uid}/AcceptTime");
+        final snapshot = await userRef.get();
+        prevAcceptTime = snapshot.value.toString();
+
+        Navigator.push(context, MaterialPageRoute(builder: ((context) => const MainScreen())));
+            DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
+            driversRef.child(currentFirebaseuser!.uid).update({"isActive": true});
+      } else {
+        Navigator.push(
+            context, MaterialPageRoute(builder: ((context) => const SignUp())));
+      }
+      // Navigator.push(context, MaterialPageRoute(builder: ((context) => const SignUp())));
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(const Duration(seconds: 3), (){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>SignUp(phone: "+8801881445979")));
-      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ViewProfile()));
-    }
-    );
+
+    // Future.delayed(const Duration(seconds: 3), (){
+    //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const SignUp()));
+    // }
+    // );
+    startTimer();
   }
 
   @override

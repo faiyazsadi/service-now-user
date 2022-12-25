@@ -4,5 +4,6 @@ final FirebaseAuth fAuth = FirebaseAuth.instance;
 
 User? currentFirebaseuser;
 
-var currAcceptTime = "", prevAcceptTime = "";
+var prevAcceptTime = "", currAcceptTime = "";
 bool requestDisabled = false;
+
