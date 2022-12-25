@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:service_now_user/authentication/sign_up.dart';
 import 'authentication/edit_profile.dart';
 import 'authentication/otp_input.dart';
+import 'authentication/view_profile.dart';
 import 'main_screen/main_screen.dart';
-
+import 'dart:io';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +35,7 @@ class Splash extends StatefulWidget {
   @override
   State<Splash> createState() => _SplashState();
 }
+
 class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
 
   @override
@@ -39,7 +43,8 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
     // TODO: implement initState
     super.initState();
     Future.delayed(const Duration(seconds: 3), (){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const MainScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>SignUp(phone: "+8801881445979")));
+      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ViewProfile()));
     }
     );
   }
@@ -88,7 +93,6 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
-
   static String verify="";
 
   @override
@@ -99,8 +103,8 @@ class _HomeState extends State<Home> {
 
   var phone="";
 
-  @override
 
+  @override
   void initState(){
     countrycode.text = "+880";
     super.initState();
@@ -117,7 +121,7 @@ class _HomeState extends State<Home> {
                 decoration: BoxDecoration(
                   color: Colors.black,
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black, spreadRadius: 2)],
+                  boxShadow: [BoxShadow(blurRadius: 10, color: Colors.blueGrey, spreadRadius: 1)],
                 ),
                 child: CircleAvatar(
                   backgroundImage: AssetImage('images/service_now_logo.jpeg'),
@@ -175,15 +179,14 @@ class _HomeState extends State<Home> {
               ),
               SizedBox(height: 30.0,),
               FloatingActionButton(onPressed: () async {
-                //used for OTP: will work later*******************************
                 await FirebaseAuth.instance.verifyPhoneNumber(
                   phoneNumber: '${countrycode.text + phone}',
                   verificationCompleted: (PhoneAuthCredential credential) {},
                   verificationFailed: (FirebaseAuthException e) {},
                   codeSent: (String verificationId, int? resendToken) {
                     Home.verify = verificationId;
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : phone)));
-
+                    print(countrycode.text + phone);
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : countrycode.text + phone)));
                   },
                   codeAutoRetrievalTimeout: (String verificationId) {},
                 );

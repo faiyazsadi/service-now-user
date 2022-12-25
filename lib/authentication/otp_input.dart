@@ -9,7 +9,6 @@ import '../main.dart';
 
 class MyOtp extends StatefulWidget {
   String phone;
-  //const MyOtp({this.text}, {Key? key}) : super(key: key);
   MyOtp({required this.phone});
 
   @override
@@ -29,7 +28,6 @@ class _MyOtpState extends State<MyOtp> {
       height: 56,
       textStyle: TextStyle(fontSize: 20, color: Color.fromRGBO(30, 60, 87, 1), fontWeight: FontWeight.w600),
       decoration: BoxDecoration(
-        // border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
         border: Border.all(color: Colors.black45),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -49,7 +47,6 @@ class _MyOtpState extends State<MyOtp> {
     var code="";
     return Container(
       child: Scaffold(
-
           backgroundColor: Color(0xFFffffff),
           body: SingleChildScrollView(
             child: Container(
@@ -63,7 +60,7 @@ class _MyOtpState extends State<MyOtp> {
                     decoration: BoxDecoration(
                       color: Colors.black,
                       shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black, spreadRadius: 2)],
+                      boxShadow: [BoxShadow(blurRadius: 10, color: Colors.blueGrey, spreadRadius: 1)],
                     ),
                     child: CircleAvatar(
                       backgroundImage: AssetImage('images/service_now_logo.jpeg'),
@@ -96,8 +93,17 @@ class _MyOtpState extends State<MyOtp> {
                       ),
                     ),
                   ),
-                  TextButton(onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: ((context) => SignUp())));
+                  TextButton(onPressed: () async{
+                    await FirebaseAuth.instance.verifyPhoneNumber(
+                      phoneNumber: '${phone}',
+                      verificationCompleted: (PhoneAuthCredential credential) {},
+                      verificationFailed: (FirebaseAuthException e) {},
+                      codeSent: (String verificationId, int? resendToken) {
+                        Home.verify = verificationId;
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : phone)));
+                      },
+                      codeAutoRetrievalTimeout: (String verificationId) {},
+                    );
                   },
                     child: Text("Resubmit for OTP",
                       style: TextStyle(
@@ -111,44 +117,56 @@ class _MyOtpState extends State<MyOtp> {
                   ),
 
                   SizedBox(height:20.0),
-                  FloatingActionButton(onPressed: () async {
+                  FloatingActionButton(
+                    onPressed: () async {
                     try{
-                      //OTP matching functions: will work later********************
                       PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: Home.verify, smsCode: code);
                       await auth.signInWithCredential(credential);
                       Navigator.push(
-                          context, MaterialPageRoute(builder: ((context) => EditProfile())));
+                          context, MaterialPageRoute(builder: ((context) => SignUp(phone: phone,))));
                     }
                     catch(e){
                       showDialog(context: context, builder: (BuildContext contest){
                         return AlertDialog(
-                          title: Text("Opssss!!!"),
+                          title: Text("Opssss !!",
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: Colors.red.shade900,
+                            fontFamily: "FredokaOne",
+                          ),),
                           content: Text('You provide wrong OTP',
                             style: TextStyle(
-                              fontSize: 18.0,
+                              fontSize: 20.0,
+                              fontFamily: "Ubuntu"
                             ),
                           ),
                           actions: [
-                            FloatingActionButton(
-                              onPressed: (){
-                                Navigator.of(context).pop();
-                              },
-                              backgroundColor: Colors.red[900],
-                              child: const Icon(Icons.thumb_up_alt_rounded),
-                            )
+                            TextButton(
+                                onPressed: (){
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("OK",
+                                  style: TextStyle(
+                                    fontFamily: "Ubuntu",
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red.shade900,
+                                  ),)),
                           ],
                         );
-                      });
+                      }
+                      );
                     };
                   },
                     backgroundColor: Colors.red[900],
-                    child: const Icon(Icons.navigate_next_rounded),),
+                    child: const Icon(Icons.navigate_next_rounded,),
+                  ),
                   SizedBox(height: 20.0,),
-                ],
+                  ]
+                  ),
               ),
             ),
           )
-      ),
     );
   }
 }
