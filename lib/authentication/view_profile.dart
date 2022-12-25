@@ -279,6 +279,9 @@ class _ViewProfileState extends State<ViewProfile> {
                                 ),
                                 actions: [
                                   TextButton(onPressed:(){
+                                    DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isActive");
+                                    userRef.set(false);
+                                    fAuth.signOut();
                                     Fluttertoast.showToast(
                                         msg: "Sign Out!",
                                         toastLength: Toast.LENGTH_LONG,
