@@ -263,12 +263,16 @@ void getActiveDrivers(BuildContext context) async {
       // TODO
     }
   }
-  cancel() {
-    print("||||||||||||||||||||");
-    print("||||||||||||||||||||");
+  cancel() async {
     DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
     userRef.set(false);
     requestDisabled = false;
+    polylineCoordinates.clear();
+    polylines.clear();
+    DatabaseReference userRef2 = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
+    final driverid = await userRef2.get();
+    DatabaseReference driverRef = FirebaseDatabase.instance.ref().child("drivers").child(driverid.value.toString()).child("isBusy");
+    driverRef.set(false);
     setState(() {
     });
   }
