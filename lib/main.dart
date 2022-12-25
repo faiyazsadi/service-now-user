@@ -4,12 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_now_user/authentication/sign_up.dart';
 import 'authentication/edit_profile.dart';
 import 'authentication/otp_input.dart';
+
 import 'authentication/view_profile.dart';
 import 'global/global.dart';
 import 'main_screen/main_screen.dart';
@@ -26,8 +30,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const Splash(),
+    return const MaterialApp(
+      home: Splash(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -65,9 +69,13 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
   void initState() {
     // TODO: implement initState
     super.initState();
+
     // Future.delayed(const Duration(seconds: 3), (){
     //   // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>SignUp(phone: "+8801881445979")));
     //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Home()));
+
+    // Future.delayed(const Duration(seconds: 3), (){
+    //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const SignUp()));
     // }
     // );
     startTimer();
