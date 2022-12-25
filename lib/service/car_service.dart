@@ -274,7 +274,8 @@ void getActiveDrivers(BuildContext context) async {
     DatabaseReference driverRef = FirebaseDatabase.instance.ref().child("drivers").child(driverid.value.toString()).child("isBusy");
     driverRef.set(false);
     setState(() {
-    });
+
+    }); 
   }
   @override
   Widget build(BuildContext context){
