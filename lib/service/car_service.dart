@@ -23,7 +23,7 @@ class _CarServiceState extends State<CarService> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("This is func"),
+          title: Text("Car Service Page"),
         ),
       ),
     );
