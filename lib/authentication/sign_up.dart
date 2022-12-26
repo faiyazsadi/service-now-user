@@ -35,9 +35,58 @@ class _SignUpState extends State<SignUp> {
   XFile? image;
   final ImagePicker picker = ImagePicker();
 
+  void storeImage() async {
+    // showDialog(
+    //     context: context,
+    //     barrierDismissible: false,
+    //     barrierColor: Colors.transparent,
+    //     useSafeArea: false,
+    //     builder: (BuildContext context) {
+    //       Future.delayed(Duration(seconds: 7), () {
+    //         Navigator.of(context).pop(true);
+    //       });
+    //       return Container(
+    //         decoration: BoxDecoration(
+    //           border: Border.all(width: 2, color: Colors.red),
+    //         ),
+    //         child: ProgressDialog(
+    //           message: "Uploading Image. Please Wait...",
+    //         ),
+    //       );
+    //     }
+    //     );
+    if(formKey.currentState!.validate()){
+      x = 2;
+      if(image==null) return;
+
+      String uniqueFileName=DateTime.now().microsecondsSinceEpoch.toString();
+
+      //Get a reference to storage root
+      Reference referenceRoot = FirebaseStorage.instance.ref();
+      Reference referenceDirImages = referenceRoot.child('images');
+
+
+      //Create a reference for the image to be stored
+      Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+
+      //Store the file
+      try{
+        await referenceImageToUpload.putFile(File(image!.path)).then((p0) async {
+          imageUrl = await referenceImageToUpload.getDownloadURL();
+          print("The imageurl is: "+imageUrl.toString());
+        });
+        //imageUrl = await referenceImageToUpload.getDownloadURL();
+      }catch(error){
+        //Do something for handling error
+        print("Some error:    " + error.toString());
+      }
+    }
+
+  }
+
   Future getImage(ImageSource media) async {
     var img = await picker.pickImage(source: media);
-
+    storeImage();
     setState(() {
       image = img;
     });
@@ -191,6 +240,9 @@ class _SignUpState extends State<SignUp> {
         "isActive": true,
         "isBusy": false,
         "alreadyAccepted": false,
+        "rating": 0,
+        "sum": 0,
+        "ServiceCount": 0,
       };
 
 
@@ -410,35 +462,35 @@ class _SignUpState extends State<SignUp> {
                       ),),
                       FloatingActionButton(
                         onPressed: () async{
-                          if(formKey.currentState!.validate()){
-                            x = 2;
-
-
-                            if(image==null) return;
-
-                            String uniqueFileName=DateTime.now().microsecondsSinceEpoch.toString();
-
-                            //Get a reference to storage root
-                            Reference referenceRoot = FirebaseStorage.instance.ref();
-                            Reference referenceDirImages = referenceRoot.child('images');
-
-
-                            //Create a reference for the image to be stored
-                            Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
-
-                            //Store the file
-                            try{
-                              await referenceImageToUpload.putFile(File(image!.path)).then((p0) async {
-                                imageUrl = await referenceImageToUpload.getDownloadURL();
-                                print("The imageurl is: "+imageUrl.toString());
-                              });
-                              //imageUrl = await referenceImageToUpload.getDownloadURL();
-                            }catch(error){
-                              //Do something for handling error
-                              print("Some error:    " + error.toString());
-                            }
+                          // if(formKey.currentState!.validate()){
+                          //   x = 2;
+                          //
+                          //
+                          //   if(image==null) return;
+                          //
+                          //   String uniqueFileName=DateTime.now().microsecondsSinceEpoch.toString();
+                          //
+                          //   //Get a reference to storage root
+                          //   Reference referenceRoot = FirebaseStorage.instance.ref();
+                          //   Reference referenceDirImages = referenceRoot.child('images');
+                          //
+                          //
+                          //   //Create a reference for the image to be stored
+                          //   Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+                          //
+                          //   //Store the file
+                          //   try{
+                          //     await referenceImageToUpload.putFile(File(image!.path)).then((p0) async {
+                          //       imageUrl = await referenceImageToUpload.getDownloadURL();
+                          //       print("The imageurl is: "+imageUrl.toString());
+                          //     });
+                          //     //imageUrl = await referenceImageToUpload.getDownloadURL();
+                          //   }catch(error){
+                          //     //Do something for handling error
+                          //     print("Some error:    " + error.toString());
+                          //   }
                             saveUserInfo();
-                          }
+                          // }
                         },
                         child: const Icon(Icons.navigate_next_rounded),
                         backgroundColor: Colors.red[900],

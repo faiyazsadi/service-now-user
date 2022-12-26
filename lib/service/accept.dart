@@ -4,10 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:service_now_user/main_screen/main_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../authentication/view_profile.dart';
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
@@ -309,8 +311,6 @@ class _Accept extends State<Accept> {
     //
     // });
 
-
-
     // DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
     // final snapshot = await userRef.get();
     if(snapshot.value == false) {
@@ -323,6 +323,8 @@ class _Accept extends State<Accept> {
       // TODO
     }
   }
+
+
   cancel() async {
     DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
     userRef.set(false);
@@ -493,124 +495,312 @@ class _Accept extends State<Accept> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Container(
-                              height:50,
-                              decoration: BoxDecoration(
-                                border: Border.all(width: 2, color: Colors.black),
-                                borderRadius: BorderRadius.circular(70),
-                             ),
-                              child: driver_image==null?const CircularProgressIndicator():Image.network(driver_image!,
-                                height: 300,
-                                width: 300,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Container(
-                              child: Text(
-                                driver_name??"",
-                                style: TextStyle(
-                                  fontFamily: "Ubuntu",
-                                  fontSize: 25,
-
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-
-                        SizedBox(height:10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Container(
-                              child: Text("User Rating ",
-                                style: TextStyle(
-                                  fontFamily: "Ubuntu",
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                ),),
-                            ),
-                            Container(
-                              child: Text(
-                                driver_phone_no??"",
-                                style: TextStyle(
-                                  fontFamily: "Ubuntu",
-                                  fontSize: 25,
-
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-
-                        SizedBox(height:10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Container(
-                              child: Text(
-                                driver_rating??"",
-                                style: TextStyle(
-                                  fontFamily: "FredokaOne",
-                                  fontSize: 60,
-                                  color: Colors.red.shade900,
-                                ),),
-                            ),
-                            Container(
+                            // Container(
+                            //   height:50,
+                            //   decoration: BoxDecoration(
+                            //     border: Border.all(width: 2, color: Colors.black),
+                            //     borderRadius: BorderRadius.circular(70),
+                            //  ),
+                            //   child: driver_image==null?const CircularProgressIndicator():Image.network(driver_image!,
+                            //     height: 300,
+                            //     width: 300,
+                            //     fit: BoxFit.cover,
+                            //   ),
+                            // ),
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),
                               child: Container(
-                                child: IconButton(
-                                  onPressed: (){},
-                                  icon: Icon(Icons.phone_forwarded_rounded,
-                                  size: 60,
-                                  color: Colors.green.shade600,),
-
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  border: Border.all(width:2.5, color: Colors.black),
+                                  borderRadius: BorderRadius.all(Radius.circular(70)),
                                 ),
-                              ),
-                            )
-                          ],
-                        ),
-
-
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0, right: 0, top: 5),
-                          child: Container(
-                            height: 100,
-                            width: 120,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(width: 2, color: Colors.red.shade900),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: TextButton(
-                                onPressed: requestDisabled ? cancel : null,
-                                child: Center(
-                                  child: Column(
-                                    children: [
-                                      Image(
-                                        image: AssetImage("images/cancelRequest.png"),
-                                        height: 50,
-                                        width: 50,
-                                      ),
-                                      SizedBox(height: 7,),
-                                      Text("Cancel Requst",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15,
-                                          color: Colors.red.shade900,
-                                          fontFamily: "Ubuntu",
-                                        ),),
-                                    ],
+                                child: CircleAvatar(
+                                  radius: 50.0,
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: AssetImage("images/loading.png"),
+                                  //backgroundImage: AssetImage('images/service_now_logo.jpeg'),
+                                  child: Container(
+                                      child: driver_image != null ? Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(70),
+                                          child: Image.network(driver_image!,
+                                            height: 300,
+                                            width: 300,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      )
+                                          : Icon(Icons.person,
+                                        size: 60,
+                                        color: Colors.white,)
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15.0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    child: Text(
+                                      driver_name??"",
+                                      style: TextStyle(
+                                        fontFamily: "Ubuntu",
+                                        fontSize: 25,
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: Container(
+                                          child: Text(
+                                            "Rating: ",
+                                            style: TextStyle(
+                                              fontFamily: "Ubuntu",
+                                              fontSize: 20,
+                                              color: Colors.black45,
+                                            ),),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 4.0),
+                                        child: Container(
+                                          child: Text(
+                                            driver_rating??"",
+                                            style: TextStyle(
+                                              fontFamily: "FredokaOne",
+                                              fontSize: 40,
+                                              color: Colors.red.shade900,
+                                            ),),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
                         ),
+
+                        SizedBox(height:5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(width: 2, color: Colors.black),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10.0, right: 10),
+                                child: Text(
+                                  driver_phone_no??"",
+                                  style: TextStyle(
+                                    fontFamily: "Ubuntu",
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red.shade900,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 20.0),
+                              child: Container(
+                                child: Container(
+                                  child: FloatingActionButton(
+                                    onPressed: () async {
+                                      launch('tel://$driver_phone_no');
+                                    },
+                                    child: const Icon(Icons.phone_forwarded_rounded,),
+                                    backgroundColor: Colors.red[900],
+                                  )
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(width: 2, color: Colors.black),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 0.0, right: 0, top: 10, bottom: 10),
+                                  child: ElevatedButton(
+                                        child: Text('Complete Service'),
+                                        onPressed: () {
+                                          showDialog(context: context, builder: (BuildContext contest){
+                                              return RatingBar.builder(
+                                                initialRating: 3,
+                                                minRating: 1,
+                                                direction: Axis.horizontal,
+                                                allowHalfRating: true,
+                                                itemCount: 5,
+                                                itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                                itemBuilder: (context, _) => Icon(
+                                                  Icons.star,
+                                                  color: Colors.amber,
+                                                ),
+                                                onRatingUpdate: (rating) async {
+                                                  DatabaseReference userRef2 = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
+                                                  final driverid = await userRef2.get();
+                                                  DatabaseReference drivergRef = FirebaseDatabase.instance.ref().child("drivers").child(driverid.value.toString());
+                                                  final ratinsnap = await drivergRef.child("rating").get();
+                                                  final service_count = await drivergRef.child("ServiceCount").get();
+                                                  final sum = await drivergRef.child("sum").get();
+
+                                                  double new_sum = int.parse(sum.value.toString()) + rating;
+                                                  int new_service_count = int.parse(service_count.value.toString()) + 1;
+                                                  double new_rating = new_sum / new_service_count;
+                                                  print("NEW RATING: ${new_rating}");
+                                                  // new_rating.toStringAsFixed(1);
+                                                  DatabaseReference updateRef = FirebaseDatabase.instance.ref().child("drivers").child(driverid.value.toString());
+                                                  updateRef.update({"rating": new_rating});
+                                                  updateRef.update({"sum": new_sum});
+                                                  updateRef.update({"ServiceCount": new_service_count});
+                                                  print("&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+                                                  print(rating);
+                                                  print("&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+                                                },
+                                              );
+                                            }
+                                            );
+                                          },
+                                        style: ElevatedButton.styleFrom(
+                                            primary: Colors.grey.shade500,
+                                            padding: EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+                                            textStyle: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: "Ubuntu")),
+                                      ),
+
+
+
+
+                                      // TextButton(
+                                      //   onPressed: requestDisabled ? cancel : null,
+                                      //   child: Center(
+                                      //     child: Column(
+                                      //       children: [
+                                      //         Image(
+                                      //           image: AssetImage("images/cancelRequest.png"),
+                                      //           height: 50,
+                                      //           width: 50,
+                                      //         ),
+                                      //         SizedBox(height: 7,),
+                                      //         Text("Cancel Requst",
+                                      //           style: TextStyle(
+                                      //             fontWeight: FontWeight.bold,
+                                      //             fontSize: 15,
+                                      //             color: Colors.red.shade900,
+                                      //             fontFamily: "Ubuntu",
+                                      //           ),),
+                                      //       ],
+                                      //     ),
+                                      //   ),
+                                      // ),
+                                    ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 0.0, right: 0, top: 10, bottom: 10),
+                                  child: ElevatedButton(
+                                    child: Text('Cancel Request'),
+                                    onPressed: () {
+                                      cancel();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.red.shade900,
+                                        padding: EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+                                        textStyle: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                        fontFamily: "Ubuntu")),
+                                  ),
+
+
+
+
+                                  // TextButton(
+                                  //   onPressed: requestDisabled ? cancel : null,
+                                  //   child: Center(
+                                  //     child: Column(
+                                  //       children: [
+                                  //         Image(
+                                  //           image: AssetImage("images/cancelRequest.png"),
+                                  //           height: 50,
+                                  //           width: 50,
+                                  //         ),
+                                  //         SizedBox(height: 7,),
+                                  //         Text("Cancel Requst",
+                                  //           style: TextStyle(
+                                  //             fontWeight: FontWeight.bold,
+                                  //             fontSize: 15,
+                                  //             color: Colors.red.shade900,
+                                  //             fontFamily: "Ubuntu",
+                                  //           ),),
+                                  //       ],
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                ),
+
+
+                              ],
+                            ),
+                          ),
+                        )
+                        // Padding(
+                        //   padding: const EdgeInsets.only(left: 0.0, right: 0, top: 5),
+                        //   child: Container(
+                        //     height: 100,
+                        //     width: 120,
+                        //     decoration: BoxDecoration(
+                        //         borderRadius: BorderRadius.circular(20),
+                        //         boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
+                        //     ),
+                        //     child: Container(
+                        //       decoration: BoxDecoration(
+                        //         color: Colors.white,
+                        //         border: Border.all(width: 2, color: Colors.red.shade900),
+                        //         borderRadius: BorderRadius.circular(10),
+                        //       ),
+                        //       child: TextButton(
+                        //         onPressed: requestDisabled ? cancel : null,
+                        //         child: Center(
+                        //           child: Column(
+                        //             children: [
+                        //               Image(
+                        //                 image: AssetImage("images/cancelRequest.png"),
+                        //                 height: 50,
+                        //                 width: 50,
+                        //               ),
+                        //               SizedBox(height: 7,),
+                        //               Text("Cancel Requst",
+                        //                 style: TextStyle(
+                        //                   fontWeight: FontWeight.bold,
+                        //                   fontSize: 15,
+                        //                   color: Colors.red.shade900,
+                        //                   fontFamily: "Ubuntu",
+                        //                 ),),
+                        //             ],
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
 
                         // onPressed: requestDisabled ? cancel : null,
 

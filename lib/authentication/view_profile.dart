@@ -113,28 +113,28 @@ class _ViewProfileState extends State<ViewProfile> {
                                 ),
                               ),
                             ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 0.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.blueGrey.shade900,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [BoxShadow(blurRadius: 0, color: Colors.black, spreadRadius: 0)],
-                                  ),
-                                  child: IconButton(
-                                    onPressed: () async{
-                                      //myAlert();
-                                    },
-                                    icon: Icon(Icons.add_a_photo_rounded,
-                                      color: Colors.white,
-                                      size: 20,),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // Positioned(
+                            //   bottom: 0,
+                            //   right: 0,
+                            //   child: Padding(
+                            //     padding: const EdgeInsets.only(left: 0.0),
+                            //     child: Container(
+                            //       decoration: BoxDecoration(
+                            //         color: Colors.blueGrey.shade900,
+                            //         shape: BoxShape.circle,
+                            //         boxShadow: [BoxShadow(blurRadius: 0, color: Colors.black, spreadRadius: 0)],
+                            //       ),
+                            //       child: IconButton(
+                            //         onPressed: () async{
+                            //           //myAlert();
+                            //         },
+                            //         icon: Icon(Icons.add_a_photo_rounded,
+                            //           color: Colors.white,
+                            //           size: 20,),
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
