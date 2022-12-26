@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:service_now_user/authentication/sign_up_screen.dart';
+import 'package:service_now_user/authentication/sign_up.dart';
+
 
 import '../global/global.dart';
-import '../splash_screen/splash_screen.dart';
 import '../widgets/progress_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -49,8 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (firebaseUser != null) {
       currentFirebaseuser = firebaseUser;
       Fluttertoast.showToast(msg: 'Login Successful.');
-      Navigator.push(
-          context, MaterialPageRoute(builder: (c) => const MySplashScreen()));
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (c) => const MySplashScreen()));
     } else {
       Navigator.pop(context);
       Fluttertoast.showToast(msg: 'Error occured while logging in.');
@@ -159,12 +159,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SignUpScreen(),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => SignUp(),
+                  //   ),
+                  // );
                 },
               ),
             ],
