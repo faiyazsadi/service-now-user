@@ -190,6 +190,7 @@ class _SignUpState extends State<SignUp> {
         "image": imageUrl,
         "isActive": true,
         "isBusy": false,
+        "alreadyAccepted": false,
       };
 
 

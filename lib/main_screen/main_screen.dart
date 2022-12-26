@@ -11,7 +11,9 @@ import 'package:service_now_user/global/global.dart';
 import 'package:location/location.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:service_now_user/service/car_service.dart';
+import 'package:service_now_user/service/taxi_service.dart';
 import '../authentication/login_screen.dart';
+import '../service/fuel_service.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -88,7 +90,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    getCurrentLocation(context);
+   getCurrentLocation(context);
     fetchData();
   }
 
@@ -128,9 +130,10 @@ class _MainScreenState extends State<MainScreen> {
 
         leading: Builder(
           builder: (BuildContext context) {
-            return Container(
-               child: Icon(Icons.home_rounded)
-            );
+            return Icon(Icons.home_rounded,
+                  size: 30,
+                  color: Colors.white,);
+
           },
         ),
         title: Text(user_name,
@@ -213,7 +216,7 @@ class _MainScreenState extends State<MainScreen> {
                 decoration: BoxDecoration(
                   boxShadow: [BoxShadow(blurRadius: 5, color: Colors.grey, spreadRadius: 1)],
                   border: Border(
-                    bottom: BorderSide(width: 2, color: Colors.white),
+                    bottom: BorderSide(width: 2, color: Colors.grey),
                   ),
 
                 ),
@@ -238,23 +241,66 @@ class _MainScreenState extends State<MainScreen> {
               Center(
                 child: Container(
                   decoration: BoxDecoration(
-                    boxShadow: [BoxShadow(blurRadius: 20, color: Colors.grey, spreadRadius: 5)],
-                    color: Colors.blueGrey,
-
+                    color: Colors.white,
                   ),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(0)),
-                      color: Colors.white,
+                      color: Colors.transparent,
                     ),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        SizedBox(height: 10,),
+                        SizedBox(height: 18,),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(9.0),
+                              padding: const EdgeInsets.all(0.0),
                               child: Container(
+                                height: 100,
+                                width: 110,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(width: 2, color: Colors.red.shade900),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: TextButton(
+                                    onPressed: (){
+                                      Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
+                                    },
+                                    child: Center(
+                                      child: Column(
+                                        children: [
+                                          Image(
+                                            image: AssetImage("images/service.png"),
+                                            height: 60,
+                                            width: 60,
+                                          ),
+                                          Text("Car Servicing",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                              color: Colors.red.shade900,
+                                              fontFamily: "Ubuntu",
+                                            ),),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child: Container(
+                                height: 100,
+                                width: 110,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
                                     boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
@@ -268,20 +314,35 @@ class _MainScreenState extends State<MainScreen> {
                                   child: TextButton(
 
                                     onPressed: (){
-                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>const CarService()));
+                                      Navigator.push(context, MaterialPageRoute(builder: ((context) => FuelService(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
                                     },
-                                    child: Image(
-                                      image: AssetImage("images/service.png"),
-                                      height: 60,
-                                      width: 60,
+                                    child: Center(
+                                      child: Column(
+                                        children: [
+                                          Image(
+                                            image: AssetImage("images/fuel.png"),
+                                            height: 60,
+                                            width: 60,
+                                          ),
+                                          Text("Fuel",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                              color: Colors.red.shade900,
+                                              fontFamily: "Ubuntu",
+                                            ),),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.all(9.0),
+                              padding: const EdgeInsets.all(0.0),
                               child: Container(
+                                height: 100,
+                                width: 110,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
                                     boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
@@ -294,106 +355,31 @@ class _MainScreenState extends State<MainScreen> {
                                   ),
                                   child: TextButton(
 
-                                    onPressed: (){},
-                                    child: Image(
-                                      image: AssetImage("images/fuel.png"),
-                                      height: 60,
-                                      width: 60,
+                                    onPressed: (){
+                                      Navigator.push(context, MaterialPageRoute(builder: ((context) => TaxiService(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
+                                    },
+                                    child: Center(
+                                      child: Column(
+                                        children: [
+                                          Image(
+                                            image: AssetImage("images/rent.png"),
+                                            height: 60,
+                                            width: 60,
+                                          ),
+                                          Text("Ambulance",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                              color: Colors.red.shade900,
+                                              fontFamily: "Ubuntu",
+                                            ),),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(9.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(width: 2, color: Colors.red.shade900),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: TextButton(
-
-                                    onPressed: (){},
-                                    child: Image(
-                                      image: AssetImage("images/rent.png"),
-                                      height: 60,
-                                      width: 60,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(9.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(width: 2, color: Colors.red.shade900),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: TextButton(
-
-                                    onPressed: (){},
-                                    child: Image(
-                                      image: AssetImage("images/courier.png"),
-                                      height: 60,
-                                      width: 60,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(width: 16,),
-                            Text("Car Service",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: Colors.red.shade900,
-                              fontFamily: "Ubuntu",
-                            ),),
-
-                            SizedBox(width: 55,),
-                            Text("Fuel",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: Colors.red.shade900,
-                                fontFamily: "Ubuntu",
-                              ),),
-
-                            SizedBox(width: 55,),
-                            Text("Rent a Car",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: Colors.red.shade900,
-                                fontFamily: "Ubuntu",
-                              ),),
-
-                            SizedBox(width: 44,),
-                            Text("Courier",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: Colors.red.shade900,
-                                fontFamily: "Ubuntu",
-                              ),),
-
                           ],
                         ),
                         SizedBox(height: 10,),
@@ -403,7 +389,6 @@ class _MainScreenState extends State<MainScreen> {
 
                 ),
               ),
-
             ],
           ),
         ),

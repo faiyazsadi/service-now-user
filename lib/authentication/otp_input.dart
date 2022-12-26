@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 import 'package:service_now_user/authentication/edit_profile.dart';
 import 'package:service_now_user/authentication/sign_up.dart';
@@ -119,44 +120,47 @@ class _MyOtpState extends State<MyOtp> {
                   SizedBox(height:20.0),
                   FloatingActionButton(
                     onPressed: () async {
-                    try{
-                      PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: Home.verify, smsCode: code);
-                      await auth.signInWithCredential(credential);
-                      Navigator.push(
-                          context, MaterialPageRoute(builder: ((context) => SignUp(phone: phone,))));
-                    }
-                    catch(e){
-                      showDialog(context: context, builder: (BuildContext contest){
-                        return AlertDialog(
-                          title: Text("Opssss !!",
-                          style: TextStyle(
-                            fontSize: 25,
-                            color: Colors.red.shade900,
-                            fontFamily: "FredokaOne",
-                          ),),
-                          content: Text('You provide wrong OTP',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontFamily: "Ubuntu"
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                                onPressed: (){
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text("OK",
-                                  style: TextStyle(
-                                    fontFamily: "Ubuntu",
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.red.shade900,
-                                  ),)),
-                          ],
-                        );
-                      }
-                      );
-                    };
+                      Navigator.push(context, MaterialPageRoute(builder: ((context) => SignUp(phone: phone,))));
+
+
+                    // try{
+                    //   PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: Home.verify, smsCode: code);
+                    //   await auth.signInWithCredential(credential);
+                    //   Navigator.push(
+                    //       context, MaterialPageRoute(builder: ((context) => SignUp(phone: phone,))));
+                    // }
+                    // catch(e){
+                    //   showDialog(context: context, builder: (BuildContext contest){
+                    //     return AlertDialog(
+                    //       title: Text("Opssss !!",
+                    //       style: TextStyle(
+                    //         fontSize: 25,
+                    //         color: Colors.red.shade900,
+                    //         fontFamily: "FredokaOne",
+                    //       ),),
+                    //       content: Text('You provide wrong OTP',
+                    //         style: TextStyle(
+                    //           fontSize: 20.0,
+                    //           fontFamily: "Ubuntu"
+                    //         ),
+                    //       ),
+                    //       actions: [
+                    //         TextButton(
+                    //             onPressed: (){
+                    //               Navigator.of(context).pop();
+                    //             },
+                    //             child: Text("OK",
+                    //               style: TextStyle(
+                    //                 fontFamily: "Ubuntu",
+                    //                 fontSize: 20.0,
+                    //                 fontWeight: FontWeight.bold,
+                    //                 color: Colors.red.shade900,
+                    //               ),)),
+                    //       ],
+                    //     );
+                    //   }
+                    //   );
+                    // };
                   },
                     backgroundColor: Colors.red[900],
                     child: const Icon(Icons.navigate_next_rounded,),

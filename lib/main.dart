@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_now_user/authentication/sign_up.dart';
+import 'package:service_now_user/service/accept.dart';
+import 'package:service_now_user/service/car_service.dart';
 import 'authentication/edit_profile.dart';
 import 'authentication/otp_input.dart';
 import 'authentication/view_profile.dart';
@@ -27,7 +29,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const Splash(),
+      // home: SignUp(phone: '+8801881445919',),
+      home: Splash(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -203,21 +206,22 @@ class _HomeState extends State<Home> {
               ),
               SizedBox(height: 30.0,),
               FloatingActionButton(onPressed: () async {
-                await FirebaseAuth.instance.verifyPhoneNumber(
-                  phoneNumber: '${countrycode.text + phone}',
-                  verificationCompleted: (PhoneAuthCredential credential) {},
-                  verificationFailed: (FirebaseAuthException e) {},
-                  codeSent: (String verificationId, int? resendToken) {
-                    Home.verify = verificationId;
-                    print(countrycode.text + phone);
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : countrycode.text + phone)));
-                  },
-                  codeAutoRetrievalTimeout: (String verificationId) {},
-                );
+                // await FirebaseAuth.instance.verifyPhoneNumber(
+                //   phoneNumber: '${countrycode.text + phone}',
+                //   verificationCompleted: (PhoneAuthCredential credential) {},
+                //   verificationFailed: (FirebaseAuthException e) {},
+                //   codeSent: (String verificationId, int? resendToken) {
+                //     Home.verify = verificationId;
+                //     print(countrycode.text + phone);
+                //     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : countrycode.text + phone)));
+                //   },
+                //   codeAutoRetrievalTimeout: (String verificationId) {},
+                // );
                 // Navigator.push(
-                //     context, MaterialPageRoute(builder: ((context) => MyOtp(text: phone))));
+                //     context, MaterialPageRoute(builder: ((context) => MyOtp(phone : countrycode.text + phone))));
+                Navigator.push(
+                    context, MaterialPageRoute(builder: ((context) => SignUp(phone: '+8801532175616'))));
 
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : phone)));
               },
                 backgroundColor: Colors.red[900],
                 child: const Icon(Icons.navigate_next_rounded),),

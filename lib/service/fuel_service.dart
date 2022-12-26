@@ -7,23 +7,23 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:service_now_user/main_screen/main_screen.dart';
 import '../authentication/view_profile.dart';
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
-import 'accept.dart';
 
 
-class CarService extends StatefulWidget {
+class FuelService extends StatefulWidget {
   late String name, email, phone, urlImage;
-  CarService({required this.name, required this.phone, required this.email, required this.urlImage});
+  FuelService({required this.name, required this.phone, required this.email, required this.urlImage});
   // const CarService({super.key});
   @override
-  State<CarService> createState() => _CarServiceState(name, phone, email, urlImage);
+  State<FuelService> createState() => _FuelServiceState(name, phone, email, urlImage);
 }
 
-class _CarServiceState extends State<CarService> {
+class _FuelServiceState extends State<FuelService> {
   late String name, email, phone, urlImage;
-  _CarServiceState(this.name, this.email, this.phone, this.urlImage);
+  _FuelServiceState(this.name, this.email, this.phone, this.urlImage);
 
   StreamSubscription? _locationSubscription, _locationSubscriptionOthers;
   final Location _locationTracker = Location();
@@ -62,7 +62,6 @@ class _CarServiceState extends State<CarService> {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       });
     }).then((value) {
-      Navigator.push(context, MaterialPageRoute(builder: ((context) => Accept(myLocation: myLocation, driverLocation: driverLocation ))));
       addPolyLine();
     });
   }
@@ -215,7 +214,6 @@ class _CarServiceState extends State<CarService> {
       }
     });
   }
-  late PointLatLng myLocation, driverLocation;
 
   getPositions() async {
     DatabaseReference mylatRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("latitude");
@@ -226,7 +224,7 @@ class _CarServiceState extends State<CarService> {
       myLatitude = mylat.value,
       myLongitude = mylon.value
     });
-    myLocation =  PointLatLng(myLatitude, myLongitude);
+    PointLatLng myLocation =  PointLatLng(myLatitude, myLongitude);
 
     DatabaseReference acceptRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
     final accepted_by = await acceptRef.get();
@@ -240,7 +238,7 @@ class _CarServiceState extends State<CarService> {
       driverLatitude = lat.value,
       driverLongitude = lon.value,
     });
-    driverLocation = PointLatLng(driverLatitude, driverLongitude);
+    PointLatLng driverLocation = PointLatLng(driverLatitude, driverLongitude);
     makeLines(myLocation, driverLocation);
   }
 
@@ -329,12 +327,18 @@ class _CarServiceState extends State<CarService> {
 
           leading: Builder(
             builder: (BuildContext context) {
-              return Container(
-                  child: Icon(Icons.home_rounded)
+              return TextButton(
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen())));
+                  },
+                  child: Icon(Icons.home_rounded,
+                  size: 30,
+                  color: Colors.white,)
               );
+
             },
           ),
-          title: Text("Car Servicing",
+          title: Text("Fuel Service",
             style: TextStyle(
               fontSize: 25,
               fontFamily: "Ubuntu",
@@ -418,7 +422,7 @@ class _CarServiceState extends State<CarService> {
                     color: Colors.white,
                     boxShadow: [BoxShadow(blurRadius: 5, color: Colors.grey, spreadRadius: 1)],
                     border: Border(
-                      bottom: BorderSide(width: 2, color: Colors.white),
+                      bottom: BorderSide(width: 2, color: Colors.grey),
                     ),
 
 
@@ -485,8 +489,8 @@ class _CarServiceState extends State<CarService> {
                                         currAcceptTime = snapshot.data!.value.toString();
                                         if(prevAcceptTime != currAcceptTime) {
                                           print(snapshot.data!.value);
-                                          prevAcceptTime = currAcceptTime;
                                           getPositions();
+                                          prevAcceptTime = currAcceptTime;
                                         }
                                       }
                                       return const Text("");
@@ -496,12 +500,12 @@ class _CarServiceState extends State<CarService> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Padding(
-                          padding: const EdgeInsets.only(bottom: 0),
+                          padding: const EdgeInsets.only(left: 25, right: 5, top: 5),
                                 child: Container(
-                                  height: 110,
+                                  height: 100,
                                   width: 120,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(20),
                                       boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)],
                                   ),
                                   child: Container(
@@ -526,7 +530,7 @@ class _CarServiceState extends State<CarService> {
                                             Text("Help Request",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 17,
+                                                fontSize: 15,
                                                 color: Colors.red.shade900,
                                                 fontFamily: "Ubuntu",
                                               ),),
@@ -537,46 +541,46 @@ class _CarServiceState extends State<CarService> {
                                   ),
                                 ),
                               ),
-                              // Padding(
-                              //   padding: const EdgeInsets.only(left: 5.0, right: 25, top: 5),
-                              //   child: Container(
-                              //     height: 100,
-                              //     width: 120,
-                              //     decoration: BoxDecoration(
-                              //         borderRadius: BorderRadius.circular(20),
-                              //         boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
-                              //     ),
-                              //     child: Container(
-                              //       decoration: BoxDecoration(
-                              //         color: Colors.white,
-                              //         border: Border.all(width: 2, color: Colors.red.shade900),
-                              //         borderRadius: BorderRadius.circular(10),
-                              //       ),
-                              //       child: TextButton(
-                              //         onPressed: requestDisabled ? cancel : null,
-                              //         child: Center(
-                              //           child: Column(
-                              //             children: [
-                              //               Image(
-                              //                 image: AssetImage("images/cancelRequest.png"),
-                              //                 height: 50,
-                              //                 width: 50,
-                              //               ),
-                              //               SizedBox(height: 7,),
-                              //               Text("Cancel Requst",
-                              //                 style: TextStyle(
-                              //                   fontWeight: FontWeight.bold,
-                              //                   fontSize: 15,
-                              //                   color: Colors.red.shade900,
-                              //                   fontFamily: "Ubuntu",
-                              //                 ),),
-                              //             ],
-                              //           ),
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5.0, right: 25, top: 5),
+                                child: Container(
+                                  height: 100,
+                                  width: 120,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(width: 2, color: Colors.red.shade900),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: TextButton(
+                                      onPressed: requestDisabled ? cancel : null,
+                                      child: Center(
+                                        child: Column(
+                                          children: [
+                                            Image(
+                                              image: AssetImage("images/cancelRequest.png"),
+                                              height: 50,
+                                              width: 50,
+                                            ),
+                                            SizedBox(height: 7,),
+                                            Text("Cancel Requst",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                                color: Colors.red.shade900,
+                                                fontFamily: "Ubuntu",
+                                              ),),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                           // SizedBox(height: 10,),
@@ -590,6 +594,12 @@ class _CarServiceState extends State<CarService> {
             ),
           ),
         ),
+
+
+
+
+
+
 
           );
   }
