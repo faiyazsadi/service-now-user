@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:service_now_user/authentication/sign_up_screen.dart';
+import 'package:service_now_user/authentication/sign_up.dart';
+
 
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
@@ -158,12 +159,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SignUpScreen(),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => SignUp(),
+                  //   ),
+                  // );
                 },
               ),
             ],

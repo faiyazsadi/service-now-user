@@ -1,9 +1,19 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:service_now_user/authentication/sign_up.dart';
+import 'authentication/edit_profile.dart';
 import 'authentication/otp_input.dart';
-
+import 'authentication/view_profile.dart';
+import 'global/global.dart';
+import 'main_screen/main_screen.dart';
+import 'dart:io';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: const Splash(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -28,16 +39,38 @@ class Splash extends StatefulWidget {
   @override
   State<Splash> createState() => _SplashState();
 }
+
 class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
 
+  startTimer() {
+    Timer(const Duration(seconds: 3), () async {
+      // send user to main screen
+      if (fAuth.currentUser != null) {
+        currentFirebaseuser = fAuth.currentUser;
+        DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users/${currentFirebaseuser!.uid}/AcceptTime");
+        final snapshot = await userRef.get();
+        prevAcceptTime = snapshot.value.toString();
+
+        Navigator.push(context, MaterialPageRoute(builder: ((context) => const MainScreen())));
+        DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("users");
+        driversRef.child(currentFirebaseuser!.uid).update({"isActive": true});
+      } else {
+        Navigator.push(
+            context, MaterialPageRoute(builder: ((context) => Home())));
+      }
+      // Navigator.push(context, MaterialPageRoute(builder: ((context) => const SignUp())));
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(const Duration(seconds: 3), (){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const Home()));
-    }
-    );
+    // Future.delayed(const Duration(seconds: 3), (){
+    //   // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>SignUp(phone: "+8801881445979")));
+    //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Home()));
+    // }
+    // );
+    startTimer();
   }
 
   @override
@@ -84,7 +117,6 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin{
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
-
   static String verify="";
 
   @override
@@ -95,8 +127,8 @@ class _HomeState extends State<Home> {
 
   var phone="";
 
-  @override
 
+  @override
   void initState(){
     countrycode.text = "+880";
     super.initState();
@@ -113,7 +145,7 @@ class _HomeState extends State<Home> {
                 decoration: BoxDecoration(
                   color: Colors.black,
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black, spreadRadius: 2)],
+                  boxShadow: [BoxShadow(blurRadius: 10, color: Colors.blueGrey, spreadRadius: 1)],
                 ),
                 child: CircleAvatar(
                   backgroundImage: AssetImage('images/service_now_logo.jpeg'),
@@ -171,22 +203,21 @@ class _HomeState extends State<Home> {
               ),
               SizedBox(height: 30.0,),
               FloatingActionButton(onPressed: () async {
-                //used for OTP: will work later*******************************
-                // await FirebaseAuth.instance.verifyPhoneNumber(
-                //   phoneNumber: '${countrycode.text + phone}',
-                //   verificationCompleted: (PhoneAuthCredential credential) {},
-                //   verificationFailed: (FirebaseAuthException e) {},
-                //   codeSent: (String verificationId, int? resendToken) {
-                //     Home.verify = verificationId;
-                //     Navigator.push(
-                //         context, MaterialPageRoute(builder: ((context) => MyOtp('${phone}'))));
-                //
-                //   },
-                //   codeAutoRetrievalTimeout: (String verificationId) {},
-                // );
+                await FirebaseAuth.instance.verifyPhoneNumber(
+                  phoneNumber: '${countrycode.text + phone}',
+                  verificationCompleted: (PhoneAuthCredential credential) {},
+                  verificationFailed: (FirebaseAuthException e) {},
+                  codeSent: (String verificationId, int? resendToken) {
+                    Home.verify = verificationId;
+                    print(countrycode.text + phone);
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : countrycode.text + phone)));
+                  },
+                  codeAutoRetrievalTimeout: (String verificationId) {},
+                );
+                // Navigator.push(
+                //     context, MaterialPageRoute(builder: ((context) => MyOtp(text: phone))));
 
-                Navigator.push(
-                    context, MaterialPageRoute(builder: ((context) => MyOtp('${phone}'))));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyOtp(phone : phone)));
               },
                 backgroundColor: Colors.red[900],
                 child: const Icon(Icons.navigate_next_rounded),),
