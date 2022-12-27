@@ -4,9 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:service_now_user/main_screen/main_screen.dart';
 import '../authentication/view_profile.dart';
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
@@ -73,7 +75,7 @@ class _CarServiceState extends State<CarService> {
   );
 
   Future<Uint8List> getMarker(BuildContext context) async {
-    ByteData byteData = await DefaultAssetBundle.of(context).load("images/car_icon.png");
+    ByteData byteData = await DefaultAssetBundle.of(context).load("images/myLocation.png");
     return byteData.buffer.asUint8List();
   }
 
@@ -107,17 +109,17 @@ class _CarServiceState extends State<CarService> {
     try {
       Uint8List imageData = await getMarker(context);
       var location = await _locationTracker.getLocation();
-      setState(() {
-        initialLocation = CameraPosition(
-            target: LatLng(location.latitude!, location.longitude!),
-            zoom: 18.00
-        );
-        _controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-            bearing: 192.8334901395799,
-            target: LatLng(location.latitude!, location.longitude!),
-            tilt: 0,
-            zoom: 18.00)));
-      });
+      // setState(() {
+      //   initialLocation = CameraPosition(
+      //       target: LatLng(location.latitude!, location.longitude!),
+      //       zoom: 18.00
+      //   );
+      //   _controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      //       bearing: 192.8334901395799,
+      //       target: LatLng(location.latitude!, location.longitude!),
+      //       tilt: 0,
+      //       zoom: 18.00)));
+      // });
       updateMarkerAndCircle(location, imageData, currentFirebaseuser!.uid);
       DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users");
       usersRef.child(currentFirebaseuser!.uid).update({"latitude": location.latitude, "longitude": location.longitude});
@@ -132,7 +134,6 @@ class _CarServiceState extends State<CarService> {
 
       _locationSubscription = _locationTracker.onLocationChanged.listen((newLocalData) {
         if (_controller != null) {
-          //************this line would be uncommented
           usersRef.child(currentFirebaseuser!.uid).update({"latitude": newLocalData.latitude, "longitude": newLocalData.longitude});
           DatabaseReference userConnection = FirebaseDatabase.instance.ref().child("users/${currentFirebaseuser!.uid}/isActive");
           userConnection.onDisconnect().set(false);
@@ -266,30 +267,6 @@ class _CarServiceState extends State<CarService> {
 
     DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
     final snapshot = await userRef.get();
-      // Timer(const Duration(seconds: 60), () async {
-      //   showDialog(
-      //       context: context,
-      //       barrierDismissible: false,
-      //       barrierColor: Colors.transparent,
-      //       useSafeArea: false,
-      //       builder: (BuildContext context) {
-      //         return Container(
-      //           decoration: BoxDecoration(
-      //             border: Border.all(width: 2, color: Colors.red),
-      //           ),
-      //           child: ProgressDialog(
-      //             message: "Requesting to providers. Please Wait...",
-      //           ),
-      //         );
-      //       }
-      //       );
-      //
-      //
-      //
-      //
-      //
-      // });
-
 
 
     // DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
@@ -303,6 +280,39 @@ class _CarServiceState extends State<CarService> {
     } else {
       // TODO
     }
+
+    Navigator.of(context).pop();
+    Fluttertoast.showToast(
+        msg: "Searching for Providers. Please wait...........",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 120,
+        backgroundColor: Colors.grey,
+        textColor: Colors.black,
+        fontSize: 20.0
+    );
+
+    // showDialog(
+    //     context: context,
+    //     barrierDismissible: false,
+    //     barrierColor: Colors.transparent,
+    //     useSafeArea: false,
+    //     builder: (BuildContext context) {
+    //       Future.delayed(Duration(seconds: 20), () {
+    //         Navigator.of(context).pop(true);
+    //       });
+    //       return Container(
+    //         decoration: BoxDecoration(
+    //           border: Border.all(width: 2, color: Colors.red),
+    //         ),
+    //         child: ProgressDialog(
+    //           message: "Searching for providers. Please Wait...",
+    //         ),
+    //       );
+    //     }
+    //     );
+
+
   }
   cancel() async {
     DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
@@ -314,6 +324,9 @@ class _CarServiceState extends State<CarService> {
     final driverid = await userRef2.get();
     DatabaseReference driverRef = FirebaseDatabase.instance.ref().child("drivers").child(driverid.value.toString()).child("isBusy");
     driverRef.set(false);
+    DatabaseReference driverRef2 = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("alreadyAccepted");
+    driverRef2.set(false);
+    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MainScreen()));
     setState(() {
 
     });
@@ -330,7 +343,14 @@ class _CarServiceState extends State<CarService> {
           leading: Builder(
             builder: (BuildContext context) {
               return Container(
-                  child: Icon(Icons.home_rounded)
+                  child: IconButton(
+                    onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen())));
+                    },
+                    icon: Icon(Icons.home,
+                    size: 30,),
+
+                  )
               );
             },
           ),
@@ -492,92 +512,243 @@ class _CarServiceState extends State<CarService> {
                                       return const Text("");
                                     }
                                 ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Padding(
-                          padding: const EdgeInsets.only(bottom: 0),
-                                child: Container(
-                                  height: 110,
-                                  width: 120,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)],
-                                  ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(width: 2, color: Colors.red.shade900),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: TextButton(
-                                      onPressed: requestDisabled ? null : request,
-                                        //Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
-
-                                      child: Center(
-                                        child: Column(
-                                          children: [
-                                            Image(
-                                              image: AssetImage("images/serviceRequest.png"),
-                                              height: 50,
-                                              width: 50,
-                                            ),
-                                            SizedBox(height: 7,),
-                                            Text("Help Request",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 17,
-                                                color: Colors.red.shade900,
-                                                fontFamily: "Ubuntu",
-                                              ),),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(width: 2, color: Colors.black45),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              // Padding(
-                              //   padding: const EdgeInsets.only(left: 5.0, right: 25, top: 5),
-                              //   child: Container(
-                              //     height: 100,
-                              //     width: 120,
-                              //     decoration: BoxDecoration(
-                              //         borderRadius: BorderRadius.circular(20),
-                              //         boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
-                              //     ),
-                              //     child: Container(
-                              //       decoration: BoxDecoration(
-                              //         color: Colors.white,
-                              //         border: Border.all(width: 2, color: Colors.red.shade900),
-                              //         borderRadius: BorderRadius.circular(10),
-                              //       ),
-                              //       child: TextButton(
-                              //         onPressed: requestDisabled ? cancel : null,
-                              //         child: Center(
-                              //           child: Column(
-                              //             children: [
-                              //               Image(
-                              //                 image: AssetImage("images/cancelRequest.png"),
-                              //                 height: 50,
-                              //                 width: 50,
-                              //               ),
-                              //               SizedBox(height: 7,),
-                              //               Text("Cancel Requst",
-                              //                 style: TextStyle(
-                              //                   fontWeight: FontWeight.bold,
-                              //                   fontSize: 15,
-                              //                   color: Colors.red.shade900,
-                              //                   fontFamily: "Ubuntu",
-                              //                 ),),
-                              //             ],
-                              //           ),
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                            ],
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 0.0, right: 0, top: 10, bottom: 10),
+                                    child: ElevatedButton(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(3.0),
+                                        child: Text('Help Request'),
+                                      ),
+                                      onPressed: () {
+                                        showDialog(context: context, builder: (BuildContext contest) {
+                                          return AlertDialog(
+                                              title: Text("Warning!",
+                                                style: TextStyle(
+                                                  fontSize: 25,
+                                                  color: Colors.red.shade900,
+                                                  fontFamily: "FredokaOne",
+                                                ),),
+                                              content: Text("Are you sure to request?",
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black45,
+                                                  fontFamily: "Ubuntu",
+                                                ),),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: (){
+                                                    request();
+                                                },
+                                                  //onPressed: requestDisabled ? null : request,
+                                                  //Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
+                                                  child: Text("YES",
+                                                          style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 17,
+                                                            color: Colors.red.shade900,
+                                                            fontFamily: "Ubuntu",
+                                                          ),
+                                                        ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: (){
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                    child: Text("NO",
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 17,
+                                                        color: Colors.red.shade900,
+                                                        fontFamily: "Ubuntu",
+                                                      ),
+                                                    ),
+
+                                                ),
+                                              ]
+                                          );
+                                        }
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.grey.shade900,
+                                          padding: EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+                                          textStyle: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: "Ubuntu")),
+                                    ),
+
+
+
+
+                                    // TextButton(
+                                    //   onPressed: requestDisabled ? cancel : null,
+                                    //   child: Center(
+                                    //     child: Column(
+                                    //       children: [
+                                    //         Image(
+                                    //           image: AssetImage("images/cancelRequest.png"),
+                                    //           height: 50,
+                                    //           width: 50,
+                                    //         ),
+                                    //         SizedBox(height: 7,),
+                                    //         Text("Cancel Requst",
+                                    //           style: TextStyle(
+                                    //             fontWeight: FontWeight.bold,
+                                    //             fontSize: 15,
+                                    //             color: Colors.red.shade900,
+                                    //             fontFamily: "Ubuntu",
+                                    //           ),),
+                                    //       ],
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 0.0, right: 0, top: 10, bottom: 10),
+                                    child: ElevatedButton(
+                                      child: Text('Cancel Request'),
+                                      onPressed: () {
+                                        showDialog(context: context, builder: (BuildContext contest) {
+                                          return AlertDialog(
+                                              title: Text("Warning!",
+                                                style: TextStyle(
+                                                  fontSize: 25,
+                                                  color: Colors.red.shade900,
+                                                  fontFamily: "FredokaOne",
+                                                ),),
+                                              content: Text("Are you sure to request?",
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black45,
+                                                  fontFamily: "Ubuntu",
+                                                ),),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: (){
+                                                    cancel();
+                                                  },
+                                                  //onPressed: requestDisabled ? null : request,
+                                                  //Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
+                                                  child: Text("YES",
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 17,
+                                                      color: Colors.red.shade900,
+                                                      fontFamily: "Ubuntu",
+                                                    ),
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: (){
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text("NO",
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 17,
+                                                      color: Colors.red.shade900,
+                                                      fontFamily: "Ubuntu",
+                                                    ),
+                                                  ),
+
+                                                ),
+                                              ]
+                                          );
+                                        }
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.red.shade900,
+                                          padding: EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+                                          textStyle: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: "Ubuntu")),
+                                    ),
+
+
+
+
+                                    // TextButton(
+                                    //   onPressed: requestDisabled ? cancel : null,
+                                    //   child: Center(
+                                    //     child: Column(
+                                    //       children: [
+                                    //         Image(
+                                    //           image: AssetImage("images/cancelRequest.png"),
+                                    //           height: 50,
+                                    //           width: 50,
+                                    //         ),
+                                    //         SizedBox(height: 7,),
+                                    //         Text("Cancel Requst",
+                                    //           style: TextStyle(
+                                    //             fontWeight: FontWeight.bold,
+                                    //             fontSize: 15,
+                                    //             color: Colors.red.shade900,
+                                    //             fontFamily: "Ubuntu",
+                                    //           ),),
+                                    //       ],
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                  ),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.only(left: 0.0, right: 0, top: 10, bottom: 10),
+                                  //   child: ElevatedButton(
+                                  //     child: Text('Cancel Request'),
+                                  //     onPressed: () {
+                                  //       onPressed: requestDisabled ? cancel : null;
+                                  //     },
+                                  //     style: ElevatedButton.styleFrom(
+                                  //         primary: Colors.red.shade900,
+                                  //         padding: EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+                                  //         textStyle: TextStyle(
+                                  //             fontSize: 20,
+                                  //             fontWeight: FontWeight.bold,
+                                  //             fontFamily: "Ubuntu")),
+                                  //   ),
+                                  //
+                                  //
+                                  //
+                                  //
+                                  //   // TextButton(
+                                  //   //   onPressed: requestDisabled ? cancel : null,
+                                  //   //   child: Center(
+                                  //   //     child: Column(
+                                  //   //       children: [
+                                  //   //         Image(
+                                  //   //           image: AssetImage("images/cancelRequest.png"),
+                                  //   //           height: 50,
+                                  //   //           width: 50,
+                                  //   //         ),
+                                  //   //         SizedBox(height: 7,),
+                                  //   //         Text("Cancel Requst",
+                                  //   //           style: TextStyle(
+                                  //   //             fontWeight: FontWeight.bold,
+                                  //   //             fontSize: 15,
+                                  //   //             color: Colors.red.shade900,
+                                  //   //             fontFamily: "Ubuntu",
+                                  //   //           ),),
+                                  //   //       ],
+                                  //   //     ),
+                                  //   //   ),
+                                  //   // ),
+                                  // ),
+
+                                ],
+                              ),
+                            ),
                           ),
                           // SizedBox(height: 10,),
                         ],

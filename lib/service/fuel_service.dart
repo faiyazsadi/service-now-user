@@ -11,6 +11,7 @@ import 'package:service_now_user/main_screen/main_screen.dart';
 import '../authentication/view_profile.dart';
 import '../global/global.dart';
 import '../widgets/progress_dialog.dart';
+import 'accept.dart';
 
 
 class FuelService extends StatefulWidget {
@@ -62,6 +63,7 @@ class _FuelServiceState extends State<FuelService> {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       });
     }).then((value) {
+      Navigator.push(context, MaterialPageRoute(builder: ((context) => Accept(myLocation: myLocation, driverLocation: driverLocation ))));
       addPolyLine();
     });
   }
@@ -72,7 +74,7 @@ class _FuelServiceState extends State<FuelService> {
   );
 
   Future<Uint8List> getMarker(BuildContext context) async {
-    ByteData byteData = await DefaultAssetBundle.of(context).load("images/car_icon.png");
+    ByteData byteData = await DefaultAssetBundle.of(context).load("images/myLocation.png");
     return byteData.buffer.asUint8List();
   }
 
@@ -214,6 +216,7 @@ class _FuelServiceState extends State<FuelService> {
       }
     });
   }
+  late PointLatLng myLocation, driverLocation;
 
   getPositions() async {
     DatabaseReference mylatRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("latitude");
@@ -224,7 +227,7 @@ class _FuelServiceState extends State<FuelService> {
       myLatitude = mylat.value,
       myLongitude = mylon.value
     });
-    PointLatLng myLocation =  PointLatLng(myLatitude, myLongitude);
+    myLocation =  PointLatLng(myLatitude, myLongitude);
 
     DatabaseReference acceptRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
     final accepted_by = await acceptRef.get();
@@ -238,7 +241,7 @@ class _FuelServiceState extends State<FuelService> {
       driverLatitude = lat.value,
       driverLongitude = lon.value,
     });
-    PointLatLng driverLocation = PointLatLng(driverLatitude, driverLongitude);
+    driverLocation = PointLatLng(driverLatitude, driverLongitude);
     makeLines(myLocation, driverLocation);
   }
 
@@ -264,29 +267,29 @@ class _FuelServiceState extends State<FuelService> {
 
     DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
     final snapshot = await userRef.get();
-      // Timer(const Duration(seconds: 60), () async {
-      //   showDialog(
-      //       context: context,
-      //       barrierDismissible: false,
-      //       barrierColor: Colors.transparent,
-      //       useSafeArea: false,
-      //       builder: (BuildContext context) {
-      //         return Container(
-      //           decoration: BoxDecoration(
-      //             border: Border.all(width: 2, color: Colors.red),
-      //           ),
-      //           child: ProgressDialog(
-      //             message: "Requesting to providers. Please Wait...",
-      //           ),
-      //         );
-      //       }
-      //       );
-      //
-      //
-      //
-      //
-      //
-      // });
+    // Timer(const Duration(seconds: 60), () async {
+    //   showDialog(
+    //       context: context,
+    //       barrierDismissible: false,
+    //       barrierColor: Colors.transparent,
+    //       useSafeArea: false,
+    //       builder: (BuildContext context) {
+    //         return Container(
+    //           decoration: BoxDecoration(
+    //             border: Border.all(width: 2, color: Colors.red),
+    //           ),
+    //           child: ProgressDialog(
+    //             message: "Requesting to providers. Please Wait...",
+    //           ),
+    //         );
+    //       }
+    //       );
+    //
+    //
+    //
+    //
+    //
+    // });
 
 
 
@@ -321,286 +324,429 @@ class _FuelServiceState extends State<FuelService> {
     DatabaseReference ref = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptTime");
     final snapshot = ref.get().asStream();
     return  Scaffold(
-        appBar: AppBar(
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //     const SnackBar(content: Text('This is a snackbar')));
+      appBar: AppBar(
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //     const SnackBar(content: Text('This is a snackbar')));
 
-          leading: Builder(
-            builder: (BuildContext context) {
-              return TextButton(
+        leading: Builder(
+          builder: (BuildContext context) {
+            return Container(
+                child: IconButton(
                   onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder: ((context) => MainScreen())));
                   },
-                  child: Icon(Icons.home_rounded,
-                  size: 30,
-                  color: Colors.white,)
-              );
+                  icon: Icon(Icons.home,
+                    size: 30,),
 
-            },
-          ),
-          title: Text("Fuel Service",
-            style: TextStyle(
-              fontSize: 25,
-              fontFamily: "Ubuntu",
-            ),),
-          centerTitle: false,
-          backgroundColor: Colors.red.shade900,
-          foregroundColor: Colors.white,
-          elevation: 25,
-          toolbarHeight: 60,
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                // Navigator.push(context, MaterialPageRoute(builder: ((context) => ViewProfile(user_name, user_phone, user_email, urlImage, name: '',))));
-                Navigator.push(context, MaterialPageRoute(builder: ((context) => ViewProfile(name: name, phone: phone, email: email, urlImage: urlImage))));
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(width: 2.5, color: Colors.white),
-                  borderRadius: BorderRadius.all(Radius.circular(50)),
-                ),
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  backgroundImage: AssetImage("images/loading.png"),
-                  //backgroundImage: AssetImage('images/service_now_logo.jpeg'),
-                  child: Container(
-                      child: urlImage != null ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(60),
-                          child: Image.network(urlImage,
-                            height: 300,
-                            width: 300,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                          : Icon(Icons.person,
-                        size: 20,
-                        color: Colors.white,)
-
-
-
-                    // child: Image.network(urlImage),
-                    //
-                    //
-                    // child: Image.network(
-                    //   urlImage,
-                    //   fit: BoxFit.fill,
-                    //   loadingBuilder: (BuildContext context, Widget child,
-                    //       ImageChunkEvent? loadingProgress) {
-                    //     if (loadingProgress == null) return child;
-                    //     return Center(
-                    //       child: CircularProgressIndicator(
-                    //         value: loadingProgress.expectedTotalBytes != null
-                    //             ? loadingProgress.cumulativeBytesLoaded /
-                    //             loadingProgress.expectedTotalBytes!
-                    //             : null,
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
-
-                  ),
-
-                  radius: 15.0,
-                ),
-              ),
-            ),
-            SizedBox(width: 10,),
-          ],
+                )
+            );
+          },
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-            ),
-            child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [BoxShadow(blurRadius: 5, color: Colors.grey, spreadRadius: 1)],
-                    border: Border(
-                      bottom: BorderSide(width: 2, color: Colors.grey),
-                    ),
+        title: Text("Car Servicing",
+          style: TextStyle(
+            fontSize: 25,
+            fontFamily: "Ubuntu",
+          ),),
+        centerTitle: false,
+        backgroundColor: Colors.red.shade900,
+        foregroundColor: Colors.white,
+        elevation: 25,
+        toolbarHeight: 60,
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              // Navigator.push(context, MaterialPageRoute(builder: ((context) => ViewProfile(user_name, user_phone, user_email, urlImage, name: '',))));
+              Navigator.push(context, MaterialPageRoute(builder: ((context) => ViewProfile(name: name, phone: phone, email: email, urlImage: urlImage))));
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(width: 2.5, color: Colors.white),
+                borderRadius: BorderRadius.all(Radius.circular(50)),
+              ),
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage: AssetImage("images/loading.png"),
+                //backgroundImage: AssetImage('images/service_now_logo.jpeg'),
+                child: Container(
+                    child: urlImage != null ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(60),
+                        child: Image.network(urlImage,
+                          height: 300,
+                          width: 300,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    )
+                        : Icon(Icons.person,
+                      size: 20,
+                      color: Colors.white,)
 
 
-                  ),
-                  height: 620,
-                  child: GoogleMap(
-                    mapType: MapType.normal,
-                    initialCameraPosition: initialLocation,
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller = controller;
-                    },
-                    markers: Set<Marker>.of(markers.values),
-                    circles: Set<Circle>.of(circles.values),
-                    polylines: Set<Polyline>.of(polylines.values),
-                  ),
-                ),
-                // Padding(
-                //   padding: const EdgeInsets.only(left: 50.0, bottom: 1100),
-                //   child: FloatingActionButton(
-                //       child: const Icon(Icons.location_searching),
-                //       onPressed: () {
-                //         // getCurrentLocation(context);
-                //         // getActiveUsers(context);
-                //       }),
-                // ),
 
-
-                  // Center(
-                  //   child: Row(
-                  //     children: [
-
-                  //       ElevatedButton(
-                  //         onPressed: requestDisabled ? null : request,
-                  //         style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Colors.deepPurple[700],
-                  //         ),
-                  //         child: const Text('Request Help'),
+                  // child: Image.network(urlImage),
+                  //
+                  //
+                  // child: Image.network(
+                  //   urlImage,
+                  //   fit: BoxFit.fill,
+                  //   loadingBuilder: (BuildContext context, Widget child,
+                  //       ImageChunkEvent? loadingProgress) {
+                  //     if (loadingProgress == null) return child;
+                  //     return Center(
+                  //       child: CircularProgressIndicator(
+                  //         value: loadingProgress.expectedTotalBytes != null
+                  //             ? loadingProgress.cumulativeBytesLoaded /
+                  //             loadingProgress.expectedTotalBytes!
+                  //             : null,
                   //       ),
-                  //       ElevatedButton(
-                  //         onPressed: requestDisabled ? cancel : null,
-                  //         style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Colors.red[700],
-                  //         ),
-                  //         child: const Text('Cancel Request'),
-                  //       ),
-                  //     ],
-                  //   ),
+                  //     );
+                  //   },
                   // ),
 
-
-                Center(
-                  child: Container(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(0)),
-                        color: Colors.white,
-                      ),
-                      child: Column(
-                        children: [
-                          StreamBuilder(
-                                    stream: snapshot,
-                                    builder: (BuildContext context, AsyncSnapshot<DataSnapshot> snapshot) {
-                                      if(snapshot.hasData) {
-                                        currAcceptTime = snapshot.data!.value.toString();
-                                        if(prevAcceptTime != currAcceptTime) {
-                                          print(snapshot.data!.value);
-                                          getPositions();
-                                          prevAcceptTime = currAcceptTime;
-                                        }
-                                      }
-                                      return const Text("");
-                                    }
-                                ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Padding(
-                          padding: const EdgeInsets.only(left: 25, right: 5, top: 5),
-                                child: Container(
-                                  height: 100,
-                                  width: 120,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)],
-                                  ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(width: 2, color: Colors.red.shade900),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: TextButton(
-                                      onPressed: requestDisabled ? null : request,
-                                        //Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
-
-                                      child: Center(
-                                        child: Column(
-                                          children: [
-                                            Image(
-                                              image: AssetImage("images/serviceRequest.png"),
-                                              height: 50,
-                                              width: 50,
-                                            ),
-                                            SizedBox(height: 7,),
-                                            Text("Help Request",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15,
-                                                color: Colors.red.shade900,
-                                                fontFamily: "Ubuntu",
-                                              ),),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 5.0, right: 25, top: 5),
-                                child: Container(
-                                  height: 100,
-                                  width: 120,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      boxShadow: [BoxShadow(blurRadius: 3, color: Colors.blueGrey.shade500, spreadRadius: 1)]
-                                  ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(width: 2, color: Colors.red.shade900),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: TextButton(
-                                      onPressed: requestDisabled ? cancel : null,
-                                      child: Center(
-                                        child: Column(
-                                          children: [
-                                            Image(
-                                              image: AssetImage("images/cancelRequest.png"),
-                                              height: 50,
-                                              width: 50,
-                                            ),
-                                            SizedBox(height: 7,),
-                                            Text("Cancel Requst",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15,
-                                                color: Colors.red.shade900,
-                                                fontFamily: "Ubuntu",
-                                              ),),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          // SizedBox(height: 10,),
-                        ],
-                      ),
-                    ),
-
-                  ),
                 ),
-              ],
+
+                radius: 15.0,
+              ),
             ),
           ),
+          SizedBox(width: 10,),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+          ),
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [BoxShadow(blurRadius: 5, color: Colors.grey, spreadRadius: 1)],
+                  border: Border(
+                    bottom: BorderSide(width: 2, color: Colors.white),
+                  ),
+
+
+                ),
+                height: 620,
+                child: GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition: initialLocation,
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller = controller;
+                  },
+                  markers: Set<Marker>.of(markers.values),
+                  circles: Set<Circle>.of(circles.values),
+                  polylines: Set<Polyline>.of(polylines.values),
+                ),
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 50.0, bottom: 1100),
+              //   child: FloatingActionButton(
+              //       child: const Icon(Icons.location_searching),
+              //       onPressed: () {
+              //         // getCurrentLocation(context);
+              //         // getActiveUsers(context);
+              //       }),
+              // ),
+
+
+              // Center(
+              //   child: Row(
+              //     children: [
+
+              //       ElevatedButton(
+              //         onPressed: requestDisabled ? null : request,
+              //         style: ElevatedButton.styleFrom(
+              //           backgroundColor: Colors.deepPurple[700],
+              //         ),
+              //         child: const Text('Request Help'),
+              //       ),
+              //       ElevatedButton(
+              //         onPressed: requestDisabled ? cancel : null,
+              //         style: ElevatedButton.styleFrom(
+              //           backgroundColor: Colors.red[700],
+              //         ),
+              //         child: const Text('Cancel Request'),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+
+
+              Center(
+                child: Container(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(0)),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        StreamBuilder(
+                            stream: snapshot,
+                            builder: (BuildContext context, AsyncSnapshot<DataSnapshot> snapshot) {
+                              if(snapshot.hasData) {
+                                currAcceptTime = snapshot.data!.value.toString();
+                                if(prevAcceptTime != currAcceptTime) {
+                                  print(snapshot.data!.value);
+                                  prevAcceptTime = currAcceptTime;
+                                  getPositions();
+                                }
+                              }
+                              return const Text("");
+                            }
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(width: 2, color: Colors.black45),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 0.0, right: 0, top: 10, bottom: 10),
+                                  child: ElevatedButton(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: Text('Help Request'),
+                                    ),
+                                    onPressed: () {
+                                      showDialog(context: context, builder: (BuildContext contest) {
+                                        return AlertDialog(
+                                            title: Text("Warning!",
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                                color: Colors.red.shade900,
+                                                fontFamily: "FredokaOne",
+                                              ),),
+                                            content: Text("Are you sure to request?",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.black45,
+                                                fontFamily: "Ubuntu",
+                                              ),),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: requestDisabled ? null : request,
+                                                //Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
+                                                child: Text("YES",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 17,
+                                                    color: Colors.red.shade900,
+                                                    fontFamily: "Ubuntu",
+                                                  ),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: (){
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text("NO",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 17,
+                                                    color: Colors.red.shade900,
+                                                    fontFamily: "Ubuntu",
+                                                  ),
+                                                ),
+
+                                              ),
+                                            ]
+                                        );
+                                      }
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.grey.shade900,
+                                        padding: EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+                                        textStyle: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: "Ubuntu")),
+                                  ),
+
+
+
+
+                                  // TextButton(
+                                  //   onPressed: requestDisabled ? cancel : null,
+                                  //   child: Center(
+                                  //     child: Column(
+                                  //       children: [
+                                  //         Image(
+                                  //           image: AssetImage("images/cancelRequest.png"),
+                                  //           height: 50,
+                                  //           width: 50,
+                                  //         ),
+                                  //         SizedBox(height: 7,),
+                                  //         Text("Cancel Requst",
+                                  //           style: TextStyle(
+                                  //             fontWeight: FontWeight.bold,
+                                  //             fontSize: 15,
+                                  //             color: Colors.red.shade900,
+                                  //             fontFamily: "Ubuntu",
+                                  //           ),),
+                                  //       ],
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 0.0, right: 0, top: 10, bottom: 10),
+                                  child: ElevatedButton(
+                                    child: Text('Cancel Request'),
+                                    onPressed: () {
+                                      showDialog(context: context, builder: (BuildContext contest) {
+                                        return AlertDialog(
+                                            title: Text("Warning!",
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                                color: Colors.red.shade900,
+                                                fontFamily: "FredokaOne",
+                                              ),),
+                                            content: Text("Are you sure to request?",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.black45,
+                                                fontFamily: "Ubuntu",
+                                              ),),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: (){
+                                                  cancel();
+                                                },
+                                                //onPressed: requestDisabled ? null : request,
+                                                //Navigator.push(context, MaterialPageRoute(builder: ((context) => CarService(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
+                                                child: Text("YES",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 17,
+                                                    color: Colors.red.shade900,
+                                                    fontFamily: "Ubuntu",
+                                                  ),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: (){
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text("NO",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 17,
+                                                    color: Colors.red.shade900,
+                                                    fontFamily: "Ubuntu",
+                                                  ),
+                                                ),
+
+                                              ),
+                                            ]
+                                        );
+                                      }
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.red.shade900,
+                                        padding: EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+                                        textStyle: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: "Ubuntu")),
+                                  ),
+
+
+
+
+                                  // TextButton(
+                                  //   onPressed: requestDisabled ? cancel : null,
+                                  //   child: Center(
+                                  //     child: Column(
+                                  //       children: [
+                                  //         Image(
+                                  //           image: AssetImage("images/cancelRequest.png"),
+                                  //           height: 50,
+                                  //           width: 50,
+                                  //         ),
+                                  //         SizedBox(height: 7,),
+                                  //         Text("Cancel Requst",
+                                  //           style: TextStyle(
+                                  //             fontWeight: FontWeight.bold,
+                                  //             fontSize: 15,
+                                  //             color: Colors.red.shade900,
+                                  //             fontFamily: "Ubuntu",
+                                  //           ),),
+                                  //       ],
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                ),
+                                // Padding(
+                                //   padding: const EdgeInsets.only(left: 0.0, right: 0, top: 10, bottom: 10),
+                                //   child: ElevatedButton(
+                                //     child: Text('Cancel Request'),
+                                //     onPressed: () {
+                                //       onPressed: requestDisabled ? cancel : null;
+                                //     },
+                                //     style: ElevatedButton.styleFrom(
+                                //         primary: Colors.red.shade900,
+                                //         padding: EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+                                //         textStyle: TextStyle(
+                                //             fontSize: 20,
+                                //             fontWeight: FontWeight.bold,
+                                //             fontFamily: "Ubuntu")),
+                                //   ),
+                                //
+                                //
+                                //
+                                //
+                                //   // TextButton(
+                                //   //   onPressed: requestDisabled ? cancel : null,
+                                //   //   child: Center(
+                                //   //     child: Column(
+                                //   //       children: [
+                                //   //         Image(
+                                //   //           image: AssetImage("images/cancelRequest.png"),
+                                //   //           height: 50,
+                                //   //           width: 50,
+                                //   //         ),
+                                //   //         SizedBox(height: 7,),
+                                //   //         Text("Cancel Requst",
+                                //   //           style: TextStyle(
+                                //   //             fontWeight: FontWeight.bold,
+                                //   //             fontSize: 15,
+                                //   //             color: Colors.red.shade900,
+                                //   //             fontFamily: "Ubuntu",
+                                //   //           ),),
+                                //   //       ],
+                                //   //     ),
+                                //   //   ),
+                                //   // ),
+                                // ),
+
+                              ],
+                            ),
+                          ),
+                        ),
+                        // SizedBox(height: 10,),
+                      ],
+                    ),
+                  ),
+
+                ),
+              ),
+            ],
+          ),
         ),
+      ),
 
-
-
-
-
-
-
-          );
+    );
   }
 }

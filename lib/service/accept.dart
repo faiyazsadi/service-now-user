@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -74,7 +75,7 @@ class _Accept extends State<Accept> {
   );
 
   Future<Uint8List> getMarker(BuildContext context) async {
-    ByteData byteData = await DefaultAssetBundle.of(context).load("images/car_icon.png");
+    ByteData byteData = await DefaultAssetBundle.of(context).load("images/myPosition.png");
     return byteData.buffer.asUint8List();
   }
 
@@ -355,7 +356,7 @@ class _Accept extends State<Accept> {
             );
           },
         ),
-        title: Text("Car Servicing",
+        title: Text("Service Info",
           style: TextStyle(
             fontSize: 25,
             fontFamily: "Ubuntu",
@@ -641,26 +642,33 @@ class _Accept extends State<Accept> {
                                   child: ElevatedButton(
                                         child: Text('Complete Service'),
                                         onPressed: () {
-                                          showDialog(context: context, builder: (BuildContext contest){
-                                              return RatingBar.builder(
-                                                initialRating: 3,
+                                          showDialog(context: context, builder: (BuildContext contest) {
+                                            return AlertDialog(
+                                              title: Text("Rate the service",
+                                                style: TextStyle(
+                                                  fontSize: 25,
+                                                  color: Colors.red.shade900,
+                                                  fontFamily: "FredokaOne",
+                                                ),),
+                                              content: RatingBar.builder(
+                                                //initialRating: 1,
                                                 minRating: 1,
                                                 direction: Axis.horizontal,
                                                 allowHalfRating: true,
                                                 itemCount: 5,
                                                 itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                                                 itemBuilder: (context, _) => Icon(
-                                                  Icons.star,
+                                                  Icons.star_rate_rounded,
                                                   color: Colors.amber,
                                                 ),
                                                 onRatingUpdate: (rating) async {
+                                                  print("************rating${rating}");
                                                   DatabaseReference userRef2 = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("AcceptedBy");
                                                   final driverid = await userRef2.get();
                                                   DatabaseReference drivergRef = FirebaseDatabase.instance.ref().child("drivers").child(driverid.value.toString());
                                                   final ratinsnap = await drivergRef.child("rating").get();
                                                   final service_count = await drivergRef.child("ServiceCount").get();
                                                   final sum = await drivergRef.child("sum").get();
-
                                                   double new_sum = int.parse(sum.value.toString()) + rating;
                                                   int new_service_count = int.parse(service_count.value.toString()) + 1;
                                                   double new_rating = new_sum / new_service_count;
@@ -674,10 +682,34 @@ class _Accept extends State<Accept> {
                                                   print(rating);
                                                   print("&&&&&&&&&&&&&&&&&&&&&&&&&&&");
                                                 },
-                                              );
-                                            }
+                                              ),
+                                              actions: [
+                                                  TextButton(
+                                                      onPressed: (){
+                                                        Fluttertoast.showToast(
+                                                            msg: "Service Rated!",
+                                                            toastLength: Toast.LENGTH_LONG,
+                                                            gravity: ToastGravity.CENTER,
+                                                            timeInSecForIosWeb: 3,
+                                                            backgroundColor: Colors.grey,
+                                                            textColor: Colors.black,
+                                                            fontSize: 20.0
+                                                        );
+                                                        cancel();
+                                                      },
+                                                      child: Text(
+                                                        "Done",
+                                                        style: TextStyle(
+                                                          fontFamily: "Ubuntu",
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 25,
+                                                          color: Colors.red.shade900,
+                                                        ),
+                                                      ))
+                                              ]
                                             );
-                                          },
+                                          });
+                                            },
                                         style: ElevatedButton.styleFrom(
                                             primary: Colors.grey.shade500,
                                             padding: EdgeInsets.symmetric(horizontal: 13, vertical: 13),

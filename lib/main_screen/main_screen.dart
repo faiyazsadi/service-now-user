@@ -37,13 +37,13 @@ class _MainScreenState extends State<MainScreen> {
   );
   
   Future<Uint8List> getMarker(BuildContext context) async {
-    ByteData byteData = await DefaultAssetBundle.of(context).load("images/car_icon.png");
+    ByteData byteData = await DefaultAssetBundle.of(context).load("images/myLocation.png");
     return byteData.buffer.asUint8List();
   }
 
   Future<void> updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData, var uid) async {
     LatLng latlng = LatLng(newLocalData.latitude!, newLocalData.longitude!);
-    setState(() async {
+    setState(() {
       marker = Marker(
           markerId: MarkerId(uid),
           position: latlng,
@@ -148,6 +148,7 @@ class _MainScreenState extends State<MainScreen> {
         toolbarHeight: 60,
         actions: <Widget>[
           TextButton(
+
             onPressed: () {
               // Navigator.push(context, MaterialPageRoute(builder: ((context) => ViewProfile(user_name, user_phone, user_email, urlImage, name: '',))));
               Navigator.push(context, MaterialPageRoute(builder: ((context) => ViewProfile(name: user_name, phone: user_phone, email: user_email, urlImage: urlImage))));
@@ -176,29 +177,6 @@ class _MainScreenState extends State<MainScreen> {
                         : Icon(Icons.person,
                       size: 20,
                       color: Colors.white,)
-
-
-
-                  // child: Image.network(urlImage),
-                  //
-                  //
-                  // child: Image.network(
-                  //   urlImage,
-                  //   fit: BoxFit.fill,
-                  //   loadingBuilder: (BuildContext context, Widget child,
-                  //       ImageChunkEvent? loadingProgress) {
-                  //     if (loadingProgress == null) return child;
-                  //     return Center(
-                  //       child: CircularProgressIndicator(
-                  //         value: loadingProgress.expectedTotalBytes != null
-                  //             ? loadingProgress.cumulativeBytesLoaded /
-                  //             loadingProgress.expectedTotalBytes!
-                  //             : null,
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
-
                 ),
 
                 radius: 15.0,
