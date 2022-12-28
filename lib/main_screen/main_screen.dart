@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
   );
   
   Future<Uint8List> getMarker(BuildContext context) async {
-    ByteData byteData = await DefaultAssetBundle.of(context).load("images/myLocation.png");
+    ByteData byteData = await DefaultAssetBundle.of(context).load("images/car_icon.png");
     return byteData.buffer.asUint8List();
   }
 

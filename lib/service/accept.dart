@@ -75,7 +75,7 @@ class _Accept extends State<Accept> {
   );
 
   Future<Uint8List> getMarker(BuildContext context) async {
-    ByteData byteData = await DefaultAssetBundle.of(context).load("images/myPosition.png");
+    ByteData byteData = await DefaultAssetBundle.of(context).load("images/car_icon.png");
     return byteData.buffer.asUint8List();
   }
 

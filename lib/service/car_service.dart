@@ -75,7 +75,7 @@ class _CarServiceState extends State<CarService> {
   );
 
   Future<Uint8List> getMarker(BuildContext context) async {
-    ByteData byteData = await DefaultAssetBundle.of(context).load("images/myLocation.png");
+    ByteData byteData = await DefaultAssetBundle.of(context).load("images/car_icon.png");
     return byteData.buffer.asUint8List();
   }
 
@@ -292,27 +292,6 @@ class _CarServiceState extends State<CarService> {
         fontSize: 20.0
     );
 
-    // showDialog(
-    //     context: context,
-    //     barrierDismissible: false,
-    //     barrierColor: Colors.transparent,
-    //     useSafeArea: false,
-    //     builder: (BuildContext context) {
-    //       Future.delayed(Duration(seconds: 20), () {
-    //         Navigator.of(context).pop(true);
-    //       });
-    //       return Container(
-    //         decoration: BoxDecoration(
-    //           border: Border.all(width: 2, color: Colors.red),
-    //         ),
-    //         child: ProgressDialog(
-    //           message: "Searching for providers. Please Wait...",
-    //         ),
-    //       );
-    //     }
-    //     );
-
-
   }
   cancel() async {
     DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(currentFirebaseuser!.uid).child("isBusy");
@@ -354,7 +333,7 @@ class _CarServiceState extends State<CarService> {
               );
             },
           ),
-          title: Text("Car Servicing",
+          title: Text("Car Service",
             style: TextStyle(
               fontSize: 25,
               fontFamily: "Ubuntu",

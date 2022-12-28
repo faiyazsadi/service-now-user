@@ -75,7 +75,7 @@ class _TaxiServiceState extends State<TaxiService> {
   );
 
   Future<Uint8List> getMarker(BuildContext context) async {
-    ByteData byteData = await DefaultAssetBundle.of(context).load("images/myLocation.png");
+    ByteData byteData = await DefaultAssetBundle.of(context).load("images/car_icon.png");
     return byteData.buffer.asUint8List();
   }
 
@@ -343,7 +343,7 @@ class _TaxiServiceState extends State<TaxiService> {
             );
           },
         ),
-        title: Text("Car Servicing",
+        title: Text("Ambulance Service",
           style: TextStyle(
             fontSize: 25,
             fontFamily: "Ubuntu",

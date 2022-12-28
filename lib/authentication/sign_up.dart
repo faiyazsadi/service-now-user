@@ -224,11 +224,11 @@ class _SignUpState extends State<SignUp> {
 
     })).user;
 
-    if(imageUrl.isEmpty){
-      print("something went wrong");
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("PLease upload an image")));
-      return;
-    }
+    // if(imageUrl.isEmpty){
+    //   print("something went wrong");
+    //   // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("PLease upload an image")));
+    //   return;
+    // }
 
     if (firebaseUser != null) {
       Map userMap = {
@@ -368,7 +368,7 @@ class _SignUpState extends State<SignUp> {
                                       ),
                                     ),
                                   )
-                                      : Icon(Icons.person_add_alt_1_rounded,
+                                      : Icon(Icons.person_rounded,
                                     size: 60,
                                     color: Colors.white,)
                               ),
